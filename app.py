@@ -72,9 +72,10 @@ div[data-testid="stMetric"]{background:#fff;border:1px solid #eadcc5;border-radi
   .market-foot{display:block}.market-foot strong{display:block;margin-top:6px}
   [data-testid="stHorizontalBlock"]{display:block!important}
   [data-testid="stHorizontalBlock"]>[data-testid="stColumn"]{display:block!important;width:100%!important;min-width:0!important;margin-bottom:.75rem}
-  [data-baseweb="tab-list"]{overflow-x:auto;white-space:nowrap;scrollbar-width:thin}
-  [data-baseweb="tab"]{flex:0 0 auto;padding-left:.7rem;padding-right:.7rem}
+  [data-baseweb="tab-list"]{display:flex!important;flex-wrap:wrap!important;white-space:normal!important;gap:.15rem}
+  [data-baseweb="tab"]{flex:0 0 auto;padding:.45rem .65rem}
   [data-testid="stSidebar"]{max-width:min(88vw,340px)}
+  [data-testid="stRadio"] label,[data-testid="stRadio"] p{color:#2d241b!important;opacity:1!important}
   .footer{padding:20px 14px;border-radius:16px}
 }
 </style>
@@ -110,19 +111,27 @@ def weight_cards(price):
     st.markdown('<div class="weight-grid">'+''.join(cards)+'</div>', unsafe_allow_html=True)
 
 
-with st.sidebar:
-    st.header("ตั้งค่าหน้าจอพนักงาน")
-    refresh_label = st.selectbox("ตรวจราคาสมาคมอัตโนมัติ", ["ทุก 15 วินาที", "ทุก 30 วินาที", "ทุก 1 นาที", "ทุก 5 นาที"], index=1)
-    refresh_seconds = {"ทุก 15 วินาที": 15, "ทุก 30 วินาที": 30, "ทุก 1 นาที": 60, "ทุก 5 นาที": 300}[refresh_label]
-    st.caption("แนะนำ 30 วินาที หน้าเว็บต้องเปิดอยู่ ระบบจึงตรวจราคาเป็นระยะ")
-    if st.button("ตรวจราคาตอนนี้", use_container_width=True):
-        official_price.clear()
-        st.rerun()
+with st.expander("ตั้งค่าการอัปเดตราคา", expanded=False):
+    refresh_col, action_col = st.columns([1.2, .8])
+    with refresh_col:
+        refresh_label = st.selectbox(
+            "ตรวจราคาสมาคมอัตโนมัติ",
+            ["ทุก 15 วินาที", "ทุก 30 วินาที", "ทุก 1 นาที", "ทุก 5 นาที"],
+            index=1,
+        )
+        st.caption("แนะนำ 30 วินาที หน้าเว็บต้องเปิดอยู่ ระบบจึงตรวจราคาเป็นระยะ")
+    with action_col:
+        st.write("ตรวจสอบทันทีโดยไม่ต้องรอรอบถัดไป")
+        if st.button("ตรวจราคาตอนนี้", use_container_width=True):
+            official_price.clear()
+            st.rerun()
+
+refresh_seconds = {"ทุก 15 วินาที": 15, "ทุก 30 วินาที": 30, "ทุก 1 นาที": 60, "ทุก 5 นาที": 300}[refresh_label]
 
 if st_autorefresh is not None:
     st_autorefresh(interval=refresh_seconds*1000, key="association_auto_refresh")
 else:
-    st.sidebar.warning("ยังไม่ได้ติดตั้งระบบรีเฟรชอัตโนมัติ กด ‘ตรวจราคาตอนนี้’ ได้ หรือรัน pip install -r requirements.txt แล้วเปิดเว็บใหม่")
+    st.warning("ยังไม่ได้ติดตั้งระบบรีเฟรชอัตโนมัติ กด ‘ตรวจราคาตอนนี้’ ได้ หรือรัน pip install -r requirements.txt แล้วเปิดเว็บใหม่")
 
 
 st.markdown(f"""<section class="hero"><div class="brand">{SHOP_NAME} · ระบบช่วยงานหน้าร้าน</div><div class="tagline">ราคาสมาคม เครื่องคำนวณ และข้อมูลที่พนักงานใช้ประจำ</div><div class="hero-note">สำหรับพนักงานภายในร้าน • ตรวจสอบราคาก่อนยืนยันกับลูกค้าทุกครั้ง</div></section>""", unsafe_allow_html=True)

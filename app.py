@@ -19,12 +19,19 @@ SHOP_HOURS = "09:00–17:30 น."
 
 WEIGHTS = {"6 สลึง": 1.5, "1 บาท": 1.0, "2 สลึง": .5, "1 สลึง": .25, "ครึ่งสลึง": .125}
 
-st.set_page_config(page_title=f"{SHOP_NAME} | ระบบช่วยงานหน้าร้าน", page_icon="🟡", layout="wide")
+st.set_page_config(
+    page_title=f"{SHOP_NAME} | ระบบช่วยงานหน้าร้าน",
+    page_icon="🟡",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap');
-html,body,[class*="css"],.stApp{font-family:'Noto Sans Thai',sans-serif}.stApp{background:#fffaf1;color:#2d241b}
-.block-container{max-width:1280px;padding-top:1.2rem;padding-bottom:2rem}#MainMenu,footer,header{visibility:hidden}
+html,body,[class*="css"],.stApp{font-family:'Noto Sans Thai',sans-serif}.stApp{background:#fffaf1;color:#2d241b;overflow-x:hidden}
+.block-container{width:100%;max-width:1280px;padding:1.2rem 2rem 2rem}#MainMenu,footer{visibility:hidden}
+[data-testid="stHeader"]{background:transparent}
+[data-testid="stAppViewContainer"],[data-testid="stMain"]{overflow-x:hidden}
 .hero{background:linear-gradient(125deg,#24140c 0%,#5b260c 55%,#9b4c0e 100%);border-radius:26px;padding:34px 38px;color:#fff;box-shadow:0 18px 45px rgba(75,34,8,.19);position:relative;overflow:hidden;margin-bottom:22px}
 .hero:after{content:'๙๖.๕%';position:absolute;right:34px;top:-18px;font-size:118px;font-weight:800;color:rgba(255,215,116,.10)}
 .brand{font-size:2.3rem;font-weight:800;color:#ffd76e;line-height:1.15}.tagline{font-size:1.08rem;color:#fff4d6;margin-top:9px}.hero-note{margin-top:22px;display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);padding:8px 13px;border-radius:99px;color:#fff8e7}
@@ -39,7 +46,37 @@ html,body,[class*="css"],.stApp{font-family:'Noto Sans Thai',sans-serif}.stApp{b
 .contact-box{background:linear-gradient(135deg,#fff1ca,#fffaf0);border:1px solid #e7ca88;border-radius:20px;padding:22px;line-height:1.8}.notice{background:#fff4df;border-left:4px solid #e1a414;padding:12px 15px;border-radius:8px;color:#6e5526;margin:12px 0}
 .footer{margin-top:36px;background:#2d180d;border-radius:22px;padding:25px;text-align:center;color:#f8e8c9}.footer strong{color:#ffd66d;font-size:1.2rem}
 div[data-testid="stMetric"]{background:#fff;border:1px solid #eadcc5;border-radius:16px;padding:15px}div[data-testid="stMetricValue"]{color:#4c2d18}.stButton>button,.stFormSubmitButton>button{background:#7d3b12;color:white;border:0;border-radius:10px;font-weight:700}.stButton>button:hover,.stFormSubmitButton>button:hover{background:#a65316;color:white}
-@media(max-width:900px){.price-grid{grid-template-columns:1fr}.service-grid{grid-template-columns:repeat(2,1fr)}.collection-grid,.weight-grid{grid-template-columns:1fr}.hero:after{display:none}}@media(max-width:650px){.sync-bar{grid-template-columns:1fr}.weight-products{grid-template-columns:1fr}}@media(max-width:560px){.service-grid,.collection-grid{grid-template-columns:1fr}.hero{padding:25px}.brand{font-size:1.8rem}.quote-value{font-size:1.55rem}}
+/* Tablet: keep every section visible and remove fixed desktop assumptions. */
+@media(max-width:1024px){
+  .block-container{max-width:100%;padding:1rem 1.15rem 1.8rem}
+  .price-grid{grid-template-columns:1fr 1fr}.price-grid .product-name{grid-column:1/-1}
+  .service-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .collection-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .weight-grid{grid-template-columns:1fr}
+  .sync-bar{grid-template-columns:1fr}
+  .hero:after{display:none}
+  [data-testid="stHorizontalBlock"]{flex-wrap:wrap!important;gap:1rem!important}
+  [data-testid="stHorizontalBlock"]>[data-testid="stColumn"]{min-width:280px!important;flex:1 1 320px!important;width:auto!important}
+}
+/* Phone: one readable column. Nothing is hidden; cards stack vertically. */
+@media(max-width:640px){
+  .block-container{padding:.75rem .75rem 1.5rem}
+  .hero{padding:22px 18px;border-radius:18px;margin-bottom:14px}
+  .brand{font-size:1.55rem}.tagline{font-size:.92rem}.hero-note{font-size:.82rem;margin-top:15px;border-radius:14px}
+  .section-title{font-size:1.3rem;margin-top:19px}.section-note{font-size:.9rem}
+  .price-wrap{padding:12px;border-radius:17px}.price-grid{grid-template-columns:1fr;gap:9px}.price-grid .product-name{grid-column:auto}
+  .product-name{padding:16px}.product-name strong{font-size:1.3rem}.quote{padding:14px 16px}.quote-value{font-size:1.5rem}
+  .service-grid,.collection-grid,.weight-grid,.weight-products{grid-template-columns:1fr}
+  .service-card,.collection-card{min-height:0;padding:16px}.weight-card{padding:14px}.weight-title{align-items:flex-start;gap:8px}
+  .weight-pair{font-size:.9rem}.weight-pair strong{white-space:nowrap}
+  .market-foot{display:block}.market-foot strong{display:block;margin-top:6px}
+  [data-testid="stHorizontalBlock"]{display:block!important}
+  [data-testid="stHorizontalBlock"]>[data-testid="stColumn"]{display:block!important;width:100%!important;min-width:0!important;margin-bottom:.75rem}
+  [data-baseweb="tab-list"]{overflow-x:auto;white-space:nowrap;scrollbar-width:thin}
+  [data-baseweb="tab"]{flex:0 0 auto;padding-left:.7rem;padding-right:.7rem}
+  [data-testid="stSidebar"]{max-width:min(88vw,340px)}
+  .footer{padding:20px 14px;border-radius:16px}
+}
 </style>
 """, unsafe_allow_html=True)
 

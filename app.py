@@ -9,7 +9,7 @@ try:
 except ImportError:
     st_autorefresh = None
 
-from official import latest_bullion
+from official import latest_bullion, latest_silver
 
 SHOP_NAME = "ห้างทองสมใจ 2"
 SHOP_TAGLINE = "ทองสวย คุณภาพมั่นใจ บริการด้วยความจริงใจ"
@@ -30,6 +30,24 @@ RETAIL_SIZES = [
     {"label": "1 บาท", "bullion_ratio": 1.0, "ornament_ratio": 1.0, "making_fee": 1000, "block_fee": 600},
 ]
 RETAIL_SIZE_BY_LABEL = {item["label"]: item for item in RETAIL_SIZES}
+
+OLD_GOLD_TYPES = {
+    "โปร่งเล็ก (ต่ำกว่า 2 บาท)": 3.10,
+    "โปร่งใหญ่ 2 บาทขึ้นไป": 2.70,
+    "โปร่งใหญ่ 5 บาทขึ้นไป": 2.55,
+    "โปร่งใหญ่ 10 บาทขึ้นไป": 2.48,
+    "ตันเล็ก (ต่ำกว่า 2 บาท)": 1.70,
+    "ตันใหญ่ (2 บาทขึ้นไป)": 1.50,
+    "งานเครื่องเล็ก": 1.70,
+    "งานเครื่องใหญ่": 1.50,
+    "แหวนโปร่งเล็ก (ต่ำกว่า 2 สลึง)": 3.00,
+    "แหวนโปร่งใหญ่ (2 สลึงขึ้นไป)": 2.70,
+    "แหวนตัน / มังกรฉลุ": 1.00,
+    "แหวนปลอกมีด": 0.75,
+    "ตะขอ": 0.65,
+}
+OLD_GOLD_COMPARISON_PERCENT = 5.0
+GOLD_PER_GRAM_FACTOR = 0.0656
 
 st.set_page_config(
     page_title=f"{SHOP_NAME} | ระบบช่วยงานหน้าร้าน",
@@ -56,6 +74,11 @@ html,body,[class*="css"],.stApp{font-family:'Noto Sans Thai',sans-serif}.stApp{b
 .collection-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.collection-card{background:linear-gradient(145deg,#fff,#fff7e5);min-height:135px}
 .weight-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.weight-card{background:#fff;border:1px solid #e6d2ae;border-radius:20px;padding:19px;box-shadow:0 8px 24px rgba(83,48,14,.06)}.weight-title{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #efe4d2;padding-bottom:12px;margin-bottom:14px}.weight-title strong{font-size:1.25rem;color:#4b2b13}.weight-chip{background:#fff1c8;color:#865a00;padding:4px 10px;border-radius:99px;font-size:.82rem;font-weight:700}.weight-products{display:grid;grid-template-columns:1fr 1fr;gap:12px}.weight-product{background:#fffaf0;border-radius:13px;padding:12px}.weight-product b{color:#6d3b17}.weight-pair{display:flex;justify-content:space-between;gap:8px;margin-top:8px;font-size:.93rem}.weight-pair span{color:#817364}.weight-pair strong{font-variant-numeric:tabular-nums;color:#25362a}
 .contact-box{background:linear-gradient(135deg,#fff1ca,#fffaf0);border:1px solid #e7ca88;border-radius:20px;padding:22px;line-height:1.8}.notice{background:#fff4df;border-left:4px solid #e1a414;padding:12px 15px;border-radius:8px;color:#6e5526;margin:12px 0}
+.old-table-wrap{width:100%;border:1px solid #e4c98f;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 8px 24px rgba(83,48,14,.06)}
+.old-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:1.05rem}.old-table th{background:linear-gradient(135deg,#5b260c,#9b4c0e);color:#fff7e4;padding:16px 12px;text-align:right;line-height:1.35;font-size:1.08rem}.old-table th:first-child{text-align:left;width:27%}.old-table td{padding:15px 12px;border-bottom:1px solid #f0e1c8;text-align:right;vertical-align:middle;line-height:1.45;word-break:break-word;font-variant-numeric:tabular-nums}.old-table td:first-child{text-align:left;font-weight:750;color:#563116}.old-table tbody tr:nth-child(even){background:#fff8ea}.old-table tbody tr:hover{background:#fff0c9}.old-table tbody tr:last-child td{border-bottom:0}.deduct-badge{display:inline-block;background:#fff0bd;color:#815500;border-radius:99px;padding:5px 9px;font-weight:800}.price-cell{color:#087b34;font-weight:850;font-size:1.08rem}.diff-plus{color:#087b34;font-weight:750}.diff-minus{color:#bd3833;font-weight:750}
+.old-summary-grid{display:grid;grid-template-columns:.72fr 1.28fr;gap:14px;margin:8px 0 14px}.old-summary-card{background:#fff;border:2px solid #e6d2ae;border-radius:20px;padding:20px 22px;box-shadow:0 8px 22px rgba(83,48,14,.07)}.old-summary-label{color:#826c58;font-size:1rem;font-weight:700}.old-summary-value{color:#4d2a12;font-size:2.2rem;font-weight:850;line-height:1.15;margin-top:6px}.old-summary-card.highlight{background:linear-gradient(135deg,#fff8df,#fff);border-color:#e2b84e}.old-summary-card.highlight .old-summary-value{color:#078c34;font-size:2.55rem}.old-formula{color:#746657;font-size:.9rem;margin-top:8px}
+div[data-testid="stNumberInput"] input{background:#fff!important;font-size:1.45rem!important;font-weight:800!important;min-height:60px!important;color:#2d241b!important}div[data-testid="stNumberInput"] button{min-height:60px!important;min-width:48px!important}
+.silver-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.silver-card{background:linear-gradient(145deg,#fff,#f3f4f6);border:1px solid #d8dce2;border-radius:16px;padding:15px}.silver-label{font-size:.82rem;color:#737983}.silver-value{font-size:1.25rem;font-weight:800;color:#39414b;margin-top:4px}.silver-sub{font-size:.76rem;color:#8a9098;margin-top:3px}.silver-source{margin-top:12px;color:#77695c;font-size:.86rem}.silver-source a{color:#8a5a00;font-weight:700}
 .footer{margin-top:36px;background:#2d180d;border-radius:22px;padding:25px;text-align:center;color:#f8e8c9}.footer strong{color:#ffd66d;font-size:1.2rem}
 div[data-testid="stMetric"]{background:#fff;border:1px solid #eadcc5;border-radius:16px;padding:15px}div[data-testid="stMetricValue"]{color:#4c2d18}.stButton>button,.stFormSubmitButton>button{background:#7d3b12;color:white;border:0;border-radius:10px;font-weight:700}.stButton>button:hover,.stFormSubmitButton>button:hover{background:#a65316;color:white}
 /* Tablet: keep every section visible and remove fixed desktop assumptions. */
@@ -66,6 +89,8 @@ div[data-testid="stMetric"]{background:#fff;border:1px solid #eadcc5;border-radi
   .collection-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .weight-grid{grid-template-columns:1fr}
   .sync-bar{grid-template-columns:1fr}
+  .silver-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .old-summary-grid{grid-template-columns:1fr 1.25fr}
   .hero:after{display:none}
   [data-testid="stHorizontalBlock"]{flex-wrap:wrap!important;gap:1rem!important}
   [data-testid="stHorizontalBlock"]>[data-testid="stColumn"]{min-width:280px!important;flex:1 1 320px!important;width:auto!important}
@@ -79,6 +104,8 @@ div[data-testid="stMetric"]{background:#fff;border:1px solid #eadcc5;border-radi
   .price-wrap{padding:12px;border-radius:17px}.price-grid{grid-template-columns:1fr;gap:9px}.price-grid .product-name{grid-column:auto}
   .product-name{padding:16px}.product-name strong{font-size:1.3rem}.quote{padding:14px 16px}.quote-value{font-size:1.5rem}
   .service-grid,.collection-grid,.weight-grid,.weight-products{grid-template-columns:1fr}
+  .silver-grid{grid-template-columns:1fr}
+  .old-summary-grid{grid-template-columns:1fr}.old-summary-value{font-size:1.8rem}.old-summary-card.highlight .old-summary-value{font-size:2.1rem}
   .service-card,.collection-card{min-height:0;padding:16px}.weight-card{padding:14px}.weight-title{align-items:flex-start;gap:8px}
   .weight-pair{font-size:.9rem}.weight-pair strong{white-space:nowrap}
   .market-foot{display:block}.market-foot strong{display:block;margin-top:6px}
@@ -88,6 +115,7 @@ div[data-testid="stMetric"]{background:#fff;border:1px solid #eadcc5;border-radi
   [data-baseweb="tab"]{flex:0 0 auto;padding:.45rem .65rem}
   [data-testid="stSidebar"]{max-width:min(88vw,340px)}
   [data-testid="stRadio"] label,[data-testid="stRadio"] p{color:#2d241b!important;opacity:1!important}
+  .old-table{font-size:.76rem}.old-table th{font-size:.76rem}.old-table th,.old-table td{padding:9px 4px}.old-table th:first-child{width:25%}.deduct-badge{padding:3px 4px}.price-cell{font-size:.78rem}
   .footer{padding:20px 14px;border-radius:16px}
 }
 </style>
@@ -97,6 +125,11 @@ div[data-testid="stMetric"]{background:#fff;border:1px solid #eadcc5;border-radi
 @st.cache_data(ttl=10, show_spinner=False)
 def official_price():
     return latest_bullion(), datetime.now(ZoneInfo("Asia/Bangkok"))
+
+
+@st.cache_data(ttl=30, show_spinner=False)
+def silver_price():
+    return latest_silver(), datetime.now(ZoneInfo("Asia/Bangkok"))
 
 
 def money(value):
@@ -146,6 +179,7 @@ with st.expander("ตั้งค่าการอัปเดตราคา",
         st.write("ตรวจสอบทันทีโดยไม่ต้องรอรอบถัดไป")
         if st.button("ตรวจราคาตอนนี้", use_container_width=True):
             official_price.clear()
+            silver_price.clear()
             st.rerun()
 
 refresh_seconds = {"ทุก 15 วินาที": 15, "ทุก 30 วินาที": 30, "ทุก 1 นาที": 60, "ทุก 5 นาที": 300}[refresh_label]
@@ -194,7 +228,25 @@ if price:
 else:
     st.info("ส่วนคำนวณราคาจะเปิดใช้งานเมื่อโหลดประกาศราคาล่าสุดได้")
 
-tabs = st.tabs(["ราคาตามน้ำหนัก", "เครื่องคำนวณหน้าร้าน", "คู่มือบริการ", "ข้อมูลร้าน"])
+st.markdown('<div class="section-title">ราคาเงินวันนี้</div><div class="section-note">ราคาอ้างอิงจากห้างกำปั่นทอง KPT · ราคาขายออกยังไม่รวมภาษีมูลค่าเพิ่ม</div>', unsafe_allow_html=True)
+try:
+    silver, silver_checked_at = silver_price()
+    st.markdown(
+        '<section class="price-wrap"><div class="silver-grid">'
+        f'<div class="silver-card"><div class="silver-label">ขายออก</div><div class="silver-value">{money(silver["sell_per_baht"])}</div><div class="silver-sub">บาท/บาท</div></div>'
+        f'<div class="silver-card"><div class="silver-label">รับซื้อ</div><div class="silver-value">{money(silver["buy_per_baht"])}</div><div class="silver-sub">บาท/บาท</div></div>'
+        f'<div class="silver-card"><div class="silver-label">ขายออก</div><div class="silver-value">{money(silver["sell_per_kg"])}</div><div class="silver-sub">บาท/กิโลกรัม</div></div>'
+        f'<div class="silver-card"><div class="silver-label">รับซื้อ</div><div class="silver-value">{money(silver["buy_per_kg"])}</div><div class="silver-sub">บาท/กิโลกรัม</div></div>'
+        f'<div class="silver-card"><div class="silver-label">รับซื้อคืนเงินรูปพรรณ</div><div class="silver-value">{money(silver["ornament_buy_per_gram"])}</div><div class="silver-sub">บาท/กรัม</div></div>'
+        '</div>'
+        f'<div class="silver-source">KPT ประกาศ {escape(silver["updated_text"])} · หน้าเว็บตรวจล่าสุด {silver_checked_at.strftime("%d/%m/%Y %H:%M:%S น.")} · <a href="{escape(silver["source"])}" target="_blank">เปิดหน้าอ้างอิง KPT</a></div></section>',
+        unsafe_allow_html=True,
+    )
+except Exception as exc:
+    st.warning(f"ขณะนี้ยังดึงราคาเงินจาก KPT ไม่ได้: {exc}")
+    st.link_button("เปิดหน้าอ้างอิงราคาเงิน KPT", "https://kpt.in.th/silverprice.php")
+
+tabs = st.tabs(["ราคาตามน้ำหนัก", "เครื่องคำนวณหน้าร้าน", "ต้นทุนรับซื้อทองเก่า", "คู่มือบริการ", "ข้อมูลร้าน"])
 
 with tabs[0]:
     st.markdown('<div class="section-title">ราคาแยกตามน้ำหนัก</div>', unsafe_allow_html=True)
@@ -269,6 +321,91 @@ with tabs[1]:
         st.caption("ไม่ใช่คำเสนอรับจำนำจริง ต้องตรวจทอง บัตรประชาชน และเงื่อนไขตามกฎหมายที่หน้าร้าน")
 
 with tabs[2]:
+    st.markdown('<div class="section-title">คำนวณต้นทุนรับซื้อทองเก่า</div>', unsafe_allow_html=True)
+    st.caption("กรอกน้ำหนักเป็นกรัม ระบบจะแสดงราคาหน้าร้านทันทีและคำนวณครบทุกประเภทงาน")
+    if price:
+        input_col, result_col = st.columns([0.8, 1.2])
+        with input_col:
+            old_weight_grams = st.number_input(
+                "กรอกน้ำหนักทองเก่า (กรัม)",
+                min_value=0.01,
+                value=1.90,
+                step=0.01,
+                format="%.2f",
+                key="old_gold_grams_direct_v3",
+            )
+            additional_deduction = st.number_input(
+                "หักเพิ่มจากราคาร้านส่งต่อชิ้น (บาท)",
+                min_value=0.0,
+                value=0.0,
+                step=100.0,
+                format="%.2f",
+                key="old_gold_extra_deduction_all_types",
+            )
+            st.caption("กรอกตัวเลขน้ำหนักจากเครื่องชั่งได้โดยตรง เช่น 1.90 กรัม")
+
+        price_per_gram_before_five_percent = price["buy"] * GOLD_PER_GRAM_FACTOR
+        storefront_per_gram = price_per_gram_before_five_percent * (1 - OLD_GOLD_COMPARISON_PERCENT / 100)
+        official_base_total = price_per_gram_before_five_percent * old_weight_grams
+        comparison_cost = official_base_total * (1 - OLD_GOLD_COMPARISON_PERCENT / 100)
+
+        with result_col:
+            st.markdown(
+                '<div class="old-summary-grid">'
+                f'<div class="old-summary-card"><div class="old-summary-label">น้ำหนักที่กรอก</div><div class="old-summary-value">{old_weight_grams:,.2f} กรัม</div></div>'
+                f'<div class="old-summary-card highlight"><div class="old-summary-label">ราคาหน้าร้าน หัก 5%</div><div class="old-summary-value">{money(comparison_cost)}</div><div class="old-formula">{money(price["buy"])} × 0.0656 × {old_weight_grams:,.2f} กรัม − 5%</div></div>'
+                '</div>',
+                unsafe_allow_html=True,
+            )
+            st.write(f"ราคาหน้าร้านต่อกรัม **{money(storefront_per_gram)}**")
+
+        old_gold_rows = []
+        for item_type, deduction in OLD_GOLD_TYPES.items():
+            after_percent = official_base_total * (1 - deduction / 100)
+            wholesale_price = max(0.0, after_percent - additional_deduction)
+            storefront_price = comparison_cost
+            old_gold_rows.append({
+                "ประเภทงาน": item_type,
+                "หัก (%)": deduction,
+                "ราคาร้านส่ง": wholesale_price,
+                "ราคาหน้าร้าน": storefront_price,
+                "ราคาต่อกรัม": storefront_per_gram,
+                "ส่วนต่าง": wholesale_price - storefront_price,
+            })
+
+        st.markdown("#### ราคารับซื้อทุกประเภทงาน")
+        table_rows = []
+        for row in old_gold_rows:
+            difference = row["ส่วนต่าง"]
+            difference_class = "diff-plus" if difference >= 0 else "diff-minus"
+            difference_text = f"{'+' if difference >= 0 else '−'}{money(abs(difference))}"
+            table_rows.append(
+                "<tr>"
+                f"<td>{escape(row['ประเภทงาน'])}</td>"
+                f"<td><span class=\"deduct-badge\">{row['หัก (%)']:.2f}%</span></td>"
+                f"<td>{money(row['ราคาร้านส่ง'])}</td>"
+                f"<td class=\"price-cell\">{money(row['ราคาหน้าร้าน'])}</td>"
+                f"<td class=\"price-cell\">{money(row['ราคาต่อกรัม'])}</td>"
+                f"<td class=\"{difference_class}\">{difference_text}</td>"
+                "</tr>"
+            )
+        table_html = (
+            '<div class="old-table-wrap"><table class="old-table">'
+            '<thead><tr><th>ประเภทงาน</th><th>หัก</th>'
+            '<th>ราคาร้านส่ง</th><th>ราคาหน้าร้าน</th><th>ราคาต่อกรัม</th><th>ส่วนต่าง</th>'
+            f"</tr></thead><tbody>{''.join(table_rows)}</tbody></table></div>"
+        )
+        st.markdown(table_html, unsafe_allow_html=True)
+        st.caption("ราคาต่อกรัม = ราคารับซื้อทองคำแท่ง × 0.0656 แล้วหัก 5%")
+
+        st.markdown(
+            '<div class="notice">ผลลัพธ์เป็นเครื่องมือช่วยคำนวณภายในร้าน ต้องตรวจเปอร์เซ็นต์ทอง น้ำหนักสุทธิ หิน ตะขอ รอยเชื่อม สภาพสินค้า และยืนยันราคาก่อนจ่ายเงินจริง</div>',
+            unsafe_allow_html=True,
+        )
+    else:
+        st.info("เครื่องคำนวณจะเปิดเมื่อโหลดราคารับซื้อทองคำแท่งล่าสุดได้")
+
+with tabs[3]:
     st.markdown('<div class="section-title">คู่มือช่วยพนักงานแนะนำสินค้า</div>', unsafe_allow_html=True)
     st.markdown("""
     <div class="collection-grid">
@@ -283,7 +420,7 @@ with tabs[2]:
       <div class="service-card"><div class="service-icon">▣</div><h4>ประเมินวงเงิน</h4><p>ประเมินเบื้องต้นจากราคารับซื้อ น้ำหนัก คุณภาพ และเงื่อนไขของร้าน</p></div>
     </div>""", unsafe_allow_html=True)
 
-with tabs[3]:
+with tabs[4]:
     st.markdown('<div class="section-title">ข้อมูลร้านและขั้นตอนก่อนยืนยันราคา</div>', unsafe_allow_html=True)
     info, checklist = st.columns([.85, 1.15])
     with info:
@@ -297,7 +434,7 @@ with tabs[3]:
         st.caption("เช็กลิสต์เป็นตัวช่วยบนหน้าจอและจะเริ่มใหม่เมื่อ session สิ้นสุด ไม่ใช่หลักฐานธุรกรรม")
     with st.expander("หลักการใช้ราคาบนหน้าจอ"):
         st.write("**ราคาสมาคม:** ใช้เป็นราคาอ้างอิง และตรวจเวลา/ครั้งที่ประกาศทุกครั้ง")
-        st.write("**ราคาทองรูปพรรณ:** ราคาขายออกในตารางยังไม่รวมค่ากำเหน็จ")
+        st.write("**ราคาทองรูปพรรณ:** ราคาขายหน้าร้านในตารางน้ำหนักรวมค่ากำเหน็จตามขนาดแล้ว")
         st.write("**ราคารับซื้อและจำนำ:** ต้องตรวจเปอร์เซ็นต์ น้ำหนัก สภาพ เอกสาร และเงื่อนไขของร้านก่อนยืนยัน")
 
 footer_time = checked_at.strftime('%d/%m/%Y %H:%M:%S น.') if checked_at else "ยังตรวจข้อมูลไม่สำเร็จ"

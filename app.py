@@ -17,7 +17,19 @@ SHOP_PHONE = "034253553"
 SHOP_ADDRESS = "24/2-3 ถ.เทศบาล ต.พระปฐมเจดีย์ อ.เมือง จ.นครปฐม 73000"
 SHOP_HOURS = "09:00–17:30 น."
 
-WEIGHTS = {"6 สลึง": 1.5, "1 บาท": 1.0, "2 สลึง": .5, "1 สลึง": .25, "ครึ่งสลึง": .125}
+RETAIL_SIZES = [
+    {"label": "0.1 กรัม", "bullion_ratio": 0.1 / 15.244, "ornament_ratio": 0.1 / 15.16, "making_fee": 400, "block_fee": 500},
+    {"label": "0.2 กรัม", "bullion_ratio": 0.2 / 15.244, "ornament_ratio": 0.2 / 15.16, "making_fee": 500, "block_fee": 500},
+    {"label": "0.3 กรัม", "bullion_ratio": 0.3 / 15.244, "ornament_ratio": 0.3 / 15.16, "making_fee": 500, "block_fee": 500},
+    {"label": "0.5 กรัม", "bullion_ratio": 0.5 / 15.244, "ornament_ratio": 0.5 / 15.16, "making_fee": 500, "block_fee": 500},
+    {"label": "0.6 กรัม", "bullion_ratio": 0.6 / 15.244, "ornament_ratio": 0.6 / 15.16, "making_fee": 500, "block_fee": 500},
+    {"label": "1 กรัม", "bullion_ratio": 1 / 15.244, "ornament_ratio": 1 / 15.16, "making_fee": 700, "block_fee": 500},
+    {"label": "ครึ่งสลึง", "bullion_ratio": .125, "ornament_ratio": .125, "making_fee": 700, "block_fee": 500},
+    {"label": "1 สลึง", "bullion_ratio": .25, "ornament_ratio": .25, "making_fee": 800, "block_fee": 500},
+    {"label": "2 สลึง", "bullion_ratio": .5, "ornament_ratio": .5, "making_fee": 900, "block_fee": 500},
+    {"label": "1 บาท", "bullion_ratio": 1.0, "ornament_ratio": 1.0, "making_fee": 1000, "block_fee": 600},
+]
+RETAIL_SIZE_BY_LABEL = {item["label"]: item for item in RETAIL_SIZES}
 
 st.set_page_config(
     page_title=f"{SHOP_NAME} | ระบบช่วยงานหน้าร้าน",
@@ -92,22 +104,32 @@ def money(value):
     return f"฿{value:,.0f}" if value.is_integer() else f"฿{value:,.2f}"
 
 
-def weight_card_html(label, price, bullion_ratio, ornament_ratio=None, chip=None):
+def weight_card_html(label, price, bullion_ratio, ornament_ratio=None, chip=None, making_fee=0, block_fee=0):
     ornament_ratio = bullion_ratio if ornament_ratio is None else ornament_ratio
     chip = chip or f"{bullion_ratio:g} บาททองคำ"
+    bullion_sell = price["sell"] * bullion_ratio + block_fee
+    ornament_sell = price["sell"] * ornament_ratio + making_fee
     return f"""
     <article class="weight-card"><div class="weight-title"><strong>{escape(label)}</strong><span class="weight-chip">{escape(chip)}</span></div>
     <div class="weight-products">
-      <div class="weight-product"><b>ทองคำแท่ง</b><div class="weight-pair"><span>รับซื้อ</span><strong>{money(price['buy']*bullion_ratio)}</strong></div><div class="weight-pair"><span>ขายออก</span><strong>{money(price['sell']*bullion_ratio)}</strong></div></div>
-      <div class="weight-product"><b>ทองรูปพรรณ</b><div class="weight-pair"><span>รับซื้อ</span><strong>{money(price['ornament_buy']*ornament_ratio)}</strong></div><div class="weight-pair"><span>ขายออก*</span><strong>{money(price['ornament_sell']*ornament_ratio)}</strong></div></div>
+      <div class="weight-product"><b>ทองคำแท่ง</b><div class="weight-pair"><span>รับซื้อ</span><strong>{money(price['buy']*bullion_ratio)}</strong></div><div class="weight-pair"><span>ขายหน้าร้าน</span><strong>{money(bullion_sell)}</strong></div><div class="quote-sub">รวมค่า Block {money(block_fee)}</div></div>
+      <div class="weight-product"><b>ทองรูปพรรณ</b><div class="weight-pair"><span>รับซื้อ</span><strong>{money(price['ornament_buy']*ornament_ratio)}</strong></div><div class="weight-pair"><span>ขายหน้าร้าน</span><strong>{money(ornament_sell)}</strong></div><div class="quote-sub">รวมค่ากำเหน็จ {money(making_fee)}</div></div>
     </div></article>"""
 
 
 def weight_cards(price):
-    cards = []
-    for label, ratio in WEIGHTS.items():
-        cards.append(weight_card_html(label, price, ratio))
-    cards.append(weight_card_html("1 กรัม", price, 1/15.244, 1/15.16, "คำนวณตามกรัม"))
+    cards = [
+        weight_card_html(
+            item["label"],
+            price,
+            item["bullion_ratio"],
+            item["ornament_ratio"],
+            "ราคาหน้าร้าน",
+            item["making_fee"],
+            item["block_fee"],
+        )
+        for item in RETAIL_SIZES
+    ]
     st.markdown('<div class="weight-grid">'+''.join(cards)+'</div>', unsafe_allow_html=True)
 
 
@@ -176,15 +198,17 @@ tabs = st.tabs(["ราคาตามน้ำหนัก", "เครื่�
 
 with tabs[0]:
     st.markdown('<div class="section-title">ราคาแยกตามน้ำหนัก</div>', unsafe_allow_html=True)
-    st.caption("คำนวณตามสัดส่วนจากราคาต่อ 1 บาททองคำ ราคาทองรูปพรรณขายจริงอาจมีค่ากำเหน็จเพิ่ม")
+    st.caption("ราคาขายหน้าร้านรวมค่ากำเหน็จทองรูปพรรณและค่า Block ทองคำแท่งตามขนาดแล้ว")
     if price:
         weight_cards(price)
-        st.caption("* ทองรูปพรรณขายออกเป็นราคาตามสัดส่วนก่อนค่ากำเหน็จ")
+        st.caption("สูตรร้าน: ราคาทองตามน้ำหนัก + ค่ากำเหน็จหรือค่า Block ที่กำหนดสำหรับขนาดนั้น")
         st.markdown("#### คำนวณน้ำหนักที่ไม่ตรงขนาดมาตรฐาน")
         custom_left, custom_right = st.columns([.8, 1.2])
         with custom_left:
             custom_unit = st.radio("หน่วยที่กรอก", ["กรัม", "บาททองคำ"], horizontal=True, key="custom_unit")
             custom_weight = st.number_input(f"กรอกน้ำหนัก ({custom_unit})", min_value=0.01, value=1.0, step=0.01, format="%.2f", key="custom_weight")
+            custom_making_fee = st.number_input("ค่ากำเหน็จทองรูปพรรณ (บาท)", min_value=0, value=700, step=100, key="custom_making_fee")
+            custom_block_fee = st.number_input("ค่า Block ทองคำแท่ง (บาท)", min_value=0, value=500, step=100, key="custom_block_fee")
             st.caption("ทองคำแท่ง 1 บาท = 15.244 กรัม · ทองรูปพรรณ 1 บาท = 15.16 กรัม")
         if custom_unit == "กรัม":
             bullion_ratio = custom_weight / 15.244
@@ -194,7 +218,7 @@ with tabs[0]:
             bullion_ratio = ornament_ratio = custom_weight
             custom_chip = f"{custom_weight:g} บาททองคำ"
         with custom_right:
-            st.markdown(weight_card_html("น้ำหนักกำหนดเอง", price, bullion_ratio, ornament_ratio, custom_chip), unsafe_allow_html=True)
+            st.markdown(weight_card_html("น้ำหนักกำหนดเอง", price, bullion_ratio, ornament_ratio, custom_chip, custom_making_fee, custom_block_fee), unsafe_allow_html=True)
     st.markdown('<div class="notice">ราคาบนเว็บไซต์เป็นราคาอ้างอิงก่อนตรวจสินค้า ราคาที่ร้านรับซื้อจริงขึ้นอยู่กับเปอร์เซ็นต์ทอง น้ำหนัก สภาพสินค้า และเงื่อนไขของร้าน</div>', unsafe_allow_html=True)
 
 with tabs[1]:
@@ -204,18 +228,36 @@ with tabs[1]:
         with left:
             product = st.selectbox("ประเภททอง", ["ทองคำแท่ง 96.5%", "ทองรูปพรรณ 96.5%"])
             action = st.radio("ต้องการคำนวณ", ["ซื้อจากร้าน", "ขายคืนให้ร้าน"], horizontal=True)
-            weight_choice = st.selectbox("น้ำหนัก", [*WEIGHTS, "กำหนดเอง"])
-            baht_weight = st.number_input("น้ำหนักจำนวนบาท", min_value=0.01, value=1.0, step=0.25) if weight_choice == "กำหนดเอง" else WEIGHTS[weight_choice]
-            making_fee = st.number_input("ค่ากำเหน็จรวม (บาท)", min_value=0, value=500, step=100, disabled=product.startswith("ทองคำแท่ง") or action.startswith("ขาย"))
-        unit = (price["sell"] if action.startswith("ซื้อ") else price["buy"]) if product.startswith("ทองคำแท่ง") else (price["ornament_sell"] if action.startswith("ซื้อ") else price["ornament_buy"])
-        estimate = unit * baht_weight + (making_fee if action.startswith("ซื้อ") and product.startswith("ทองรูปพรรณ") else 0)
+            weight_choice = st.selectbox("น้ำหนัก", [*[item["label"] for item in RETAIL_SIZES], "กำหนดเอง"])
+            selected_size = RETAIL_SIZE_BY_LABEL.get(weight_choice)
+            if selected_size:
+                baht_weight = selected_size["bullion_ratio"] if product.startswith("ทองคำแท่ง") else selected_size["ornament_ratio"]
+                preset_fee = selected_size["block_fee"] if product.startswith("ทองคำแท่ง") else selected_size["making_fee"]
+            else:
+                baht_weight = st.number_input("น้ำหนักจำนวนบาท", min_value=0.01, value=1.0, step=0.01)
+                preset_fee = 500 if product.startswith("ทองคำแท่ง") else 700
+            retail_fee = st.number_input(
+                "ค่า Block (บาท)" if product.startswith("ทองคำแท่ง") else "ค่ากำเหน็จ (บาท)",
+                min_value=0,
+                value=int(preset_fee),
+                step=100,
+                disabled=action.startswith("ขาย"),
+                key=f"retail_fee_{product}_{action}_{weight_choice}",
+            )
+        if action.startswith("ซื้อ"):
+            unit = price["sell"]
+            estimate = unit * baht_weight + retail_fee
+        else:
+            unit = price["buy"] if product.startswith("ทองคำแท่ง") else price["ornament_buy"]
+            estimate = unit * baht_weight
         with right:
             st.metric("ราคาประเมิน", money(estimate))
             st.write(f"น้ำหนักรวม **{baht_weight:g} บาททองคำ**")
             st.write(f"ราคาอ้างอิงต่อบาท **{money(unit)}**")
-            if making_fee and product.startswith("ทองรูปพรรณ") and action.startswith("ซื้อ"):
-                st.write(f"รวมค่ากำเหน็จตัวอย่าง **{money(making_fee)}**")
-            st.caption("เป็นเพียงการคำนวณเบื้องต้น กรุณาติดต่อร้านเพื่อยืนยันราคาและค่ากำเหน็จ")
+            if retail_fee and action.startswith("ซื้อ"):
+                fee_name = "ค่า Block" if product.startswith("ทองคำแท่ง") else "ค่ากำเหน็จ"
+                st.write(f"รวม{fee_name} **{money(retail_fee)}**")
+            st.caption("ราคาซื้อจากร้านใช้สูตรราคาทองคำแท่งขายออกตามน้ำหนัก บวกค่ากำเหน็จหรือค่า Block")
         st.divider()
         st.markdown("#### ประเมินวงเงินจำนำเบื้องต้น")
         p1, p2, p3 = st.columns(3)

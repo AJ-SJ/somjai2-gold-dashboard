@@ -18,16 +18,16 @@ SHOP_ADDRESS = "24/2-3 ถ.เทศบาล ต.พระปฐมเจดี
 SHOP_HOURS = "09:00–17:30 น."
 
 RETAIL_SIZES = [
-    {"label": "0.1 กรัม", "bullion_ratio": 0.1 / 15.244, "ornament_ratio": 0.1 / 15.16, "making_fee": 400, "block_fee": 500},
-    {"label": "0.2 กรัม", "bullion_ratio": 0.2 / 15.244, "ornament_ratio": 0.2 / 15.16, "making_fee": 500, "block_fee": 500},
-    {"label": "0.3 กรัม", "bullion_ratio": 0.3 / 15.244, "ornament_ratio": 0.3 / 15.16, "making_fee": 500, "block_fee": 500},
-    {"label": "0.5 กรัม", "bullion_ratio": 0.5 / 15.244, "ornament_ratio": 0.5 / 15.16, "making_fee": 500, "block_fee": 500},
-    {"label": "0.6 กรัม", "bullion_ratio": 0.6 / 15.244, "ornament_ratio": 0.6 / 15.16, "making_fee": 500, "block_fee": 500},
-    {"label": "1 กรัม", "bullion_ratio": 1 / 15.244, "ornament_ratio": 1 / 15.16, "making_fee": 700, "block_fee": 500},
-    {"label": "ครึ่งสลึง", "bullion_ratio": .125, "ornament_ratio": .125, "making_fee": 700, "block_fee": 500},
-    {"label": "1 สลึง", "bullion_ratio": .25, "ornament_ratio": .25, "making_fee": 800, "block_fee": 500},
-    {"label": "2 สลึง", "bullion_ratio": .5, "ornament_ratio": .5, "making_fee": 900, "block_fee": 500},
-    {"label": "1 บาท", "bullion_ratio": 1.0, "ornament_ratio": 1.0, "making_fee": 1000, "block_fee": 600},
+    {"label": "1 บาท", "grams": 15.244, "bullion_ratio": 1.0, "ornament_ratio": 1.0, "making_fee": 1000, "block_fee": 600},
+    {"label": "2 สลึง", "grams": 15.244 / 2, "bullion_ratio": .5, "ornament_ratio": .5, "making_fee": 900, "block_fee": 500},
+    {"label": "1 สลึง", "grams": 15.244 / 4, "bullion_ratio": .25, "ornament_ratio": .25, "making_fee": 800, "block_fee": 500},
+    {"label": "ครึ่งสลึง", "grams": 15.244 / 8, "bullion_ratio": .125, "ornament_ratio": .125, "making_fee": 700, "block_fee": 500},
+    {"label": "1 กรัม", "grams": 1.0, "bullion_ratio": 1 / 15.244, "ornament_ratio": 1 / 15.16, "making_fee": 700, "block_fee": 500},
+    {"label": "0.6 กรัม", "grams": 0.6, "bullion_ratio": 0.6 / 15.244, "ornament_ratio": 0.6 / 15.16, "making_fee": 500, "block_fee": 500},
+    {"label": "0.5 กรัม", "grams": 0.5, "bullion_ratio": 0.5 / 15.244, "ornament_ratio": 0.5 / 15.16, "making_fee": 500, "block_fee": 500},
+    {"label": "0.3 กรัม", "grams": 0.3, "bullion_ratio": 0.3 / 15.244, "ornament_ratio": 0.3 / 15.16, "making_fee": 500, "block_fee": 500},
+    {"label": "0.2 กรัม", "grams": 0.2, "bullion_ratio": 0.2 / 15.244, "ornament_ratio": 0.2 / 15.16, "making_fee": 500, "block_fee": 500},
+    {"label": "0.1 กรัม", "grams": 0.1, "bullion_ratio": 0.1 / 15.244, "ornament_ratio": 0.1 / 15.16, "making_fee": 400, "block_fee": 500},
 ]
 RETAIL_SIZE_BY_LABEL = {item["label"]: item for item in RETAIL_SIZES}
 
@@ -67,7 +67,7 @@ html,body,[class*="css"],.stApp{font-family:'Noto Sans Thai',sans-serif}.stApp{b
 .brand{font-size:2.3rem;font-weight:800;color:#ffd76e;line-height:1.15}.tagline{font-size:1.08rem;color:#fff4d6;margin-top:9px}.hero-note{margin-top:22px;display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);padding:8px 13px;border-radius:99px;color:#fff8e7}
 .section-title{font-size:1.55rem;font-weight:800;color:#4d2a12;margin:24px 0 5px}.section-note{color:#77695c;margin-bottom:15px}
 .price-wrap{background:#fff;border:1px solid #ead8b8;border-radius:24px;padding:22px;box-shadow:0 10px 30px rgba(90,54,17,.08)}
-.price-grid{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:13px}.product-name{border-radius:17px;background:linear-gradient(135deg,#f5b900,#ffd75a);padding:22px;display:flex;flex-direction:column;justify-content:center;color:#382300}.product-name strong{font-size:1.55rem}.product-name span{font-size:1rem;font-weight:700;margin-top:3px}.quote{border:1px solid #eadfcd;background:#fffdf9;border-radius:17px;padding:17px 20px}.quote-label{font-weight:700;color:#9b6900}.quote-value{font-size:1.85rem;font-weight:800;color:#079b3a;margin-top:3px}.quote-sub{font-size:.84rem;color:#86796e}
+.price-grid{display:grid;grid-template-columns:1.1fr repeat(3,1fr);gap:13px}.product-name{border-radius:17px;background:linear-gradient(135deg,#f5b900,#ffd75a);padding:22px;display:flex;flex-direction:column;justify-content:center;color:#382300}.product-name strong{font-size:1.55rem}.product-name span{font-size:1rem;font-weight:700;margin-top:3px}.quote{border:1px solid #eadfcd;background:#fffdf9;border-radius:17px;padding:17px 20px}.quote-label{font-weight:700;color:#9b6900}.quote-value{font-size:1.85rem;font-weight:800;color:#079b3a;margin-top:3px}.quote-sub{font-size:.84rem;color:#86796e}.scb-quote{background:linear-gradient(145deg,#fff8df,#fff);border:2px solid #e3b83f}.scb-quote .quote-label{color:#7b5200}.grid-placeholder{visibility:hidden}
 .change-up{color:#078c34}.change-down{color:#c43e38}.market-foot{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;color:#77695c;font-size:.92rem;margin-top:14px}
 .sync-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}.sync-item{background:#fff;border:1px solid #eadcc5;border-radius:14px;padding:13px 16px}.sync-label{color:#8a7968;font-size:.82rem}.sync-value{color:#4c2d18;font-weight:750;margin-top:2px}.live-dot{display:inline-block;width:9px;height:9px;background:#14a44d;border-radius:50%;margin-right:7px;box-shadow:0 0 0 4px rgba(20,164,77,.12)}
 .service-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.service-card,.collection-card{background:#fff;border:1px solid #eadcc5;border-radius:18px;padding:20px;min-height:150px;box-shadow:0 6px 20px rgba(80,48,15,.05)}.service-card h4,.collection-card h4{color:#5d3213;font-size:1.08rem;margin:8px 0}.service-card p,.collection-card p{color:#75695e;line-height:1.65}.service-icon{font-size:1.8rem}
@@ -86,6 +86,7 @@ div[data-testid="stMetric"]{background:#fff;border:1px solid #eadcc5;border-radi
 @media(max-width:1024px){
   .block-container{max-width:100%;padding:1rem 1.15rem 1.8rem}
   .price-grid{grid-template-columns:1fr 1fr}.price-grid .product-name{grid-column:1/-1}
+  .grid-placeholder{display:none}
   .service-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .collection-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .weight-grid{grid-template-columns:1fr}
@@ -138,16 +139,19 @@ def money(value):
     return f"฿{value:,.0f}" if value.is_integer() else f"฿{value:,.2f}"
 
 
-def weight_card_html(label, price, bullion_ratio, ornament_ratio=None, chip=None, making_fee=0, block_fee=0):
+def weight_card_html(label, price, bullion_ratio, ornament_ratio=None, chip=None, making_fee=0, block_fee=0, weight_grams=None):
     ornament_ratio = bullion_ratio if ornament_ratio is None else ornament_ratio
+    weight_grams = ornament_ratio * 15.244 if weight_grams is None else weight_grams
     chip = chip or f"{bullion_ratio:g} บาททองคำ"
     bullion_sell = price["sell"] * bullion_ratio + block_fee
     ornament_sell = price["sell"] * ornament_ratio + making_fee
+    scb_price = price["buy"] * (1 - OLD_GOLD_COMPARISON_PERCENT / 100)
+    ornament_buy = scb_price * GOLD_PER_GRAM_FACTOR * weight_grams
     return f"""
     <article class="weight-card"><div class="weight-title"><strong>{escape(label)}</strong><span class="weight-chip">{escape(chip)}</span></div>
     <div class="weight-products">
       <div class="weight-product"><b>ทองคำแท่ง</b><div class="weight-pair"><span>รับซื้อ</span><strong>{money(price['buy']*bullion_ratio)}</strong></div><div class="weight-pair"><span>ขายหน้าร้าน</span><strong>{money(bullion_sell)}</strong></div><div class="quote-sub">รวมค่า Block {money(block_fee)}</div></div>
-      <div class="weight-product"><b>ทองรูปพรรณ</b><div class="weight-pair"><span>รับซื้อ</span><strong>{money(price['ornament_buy']*ornament_ratio)}</strong></div><div class="weight-pair"><span>ขายหน้าร้าน</span><strong>{money(ornament_sell)}</strong></div><div class="quote-sub">รวมค่ากำเหน็จ {money(making_fee)}</div></div>
+      <div class="weight-product"><b>ทองรูปพรรณ</b><div class="weight-pair"><span>รับซื้อ</span><strong>{money(ornament_buy)}</strong></div><div class="weight-pair"><span>ขายหน้าร้าน</span><strong>{money(ornament_sell)}</strong></div><div class="quote-sub">รับซื้อจากราคาสคบ. × 0.0656 × {weight_grams:g} กรัม</div><div class="quote-sub">รวมค่ากำเหน็จ {money(making_fee)}</div></div>
     </div></article>"""
 
 
@@ -161,6 +165,7 @@ def weight_cards(price):
             "ราคาหน้าร้าน",
             item["making_fee"],
             item["block_fee"],
+            item["grams"],
         )
         for item in RETAIL_SIZES
     ]
@@ -195,9 +200,24 @@ st.markdown(f"""<section class="hero"><div class="brand">{SHOP_NAME} · ระ�
 
 try:
     price, checked_at = official_price()
+    st.session_state["last_good_official_price"] = price
+    st.session_state["last_good_official_checked_at"] = checked_at
+    using_saved_price = False
 except Exception as exc:
-    price, checked_at = None, None
-    st.error(f"ขณะนี้ยังดึงราคาประกาศสมาคมค้าทองคำไม่ได้ กรุณาตรวจสอบอีกครั้ง: {exc}")
+    price = st.session_state.get("last_good_official_price")
+    checked_at = st.session_state.get("last_good_official_checked_at")
+    using_saved_price = price is not None and checked_at is not None
+    if using_saved_price:
+        st.warning(
+            "เว็บสมาคมตอบกลับช้าชั่วคราว — ขณะนี้กำลังแสดงราคาสมาคมครั้งล่าสุด"
+            f"ที่ดึงสำเร็จเมื่อ {checked_at.strftime('%d/%m/%Y %H:%M:%S น.')} "
+            "ระบบจะลองใหม่อัตโนมัติในรอบถัดไป"
+        )
+    else:
+        st.error(
+            "ขณะนี้ยังดึงราคาประกาศสมาคมค้าทองคำไม่ได้ "
+            "ระบบจะลองใหม่อัตโนมัติในรอบถัดไป หรือกด ‘ตรวจราคาตอนนี้’"
+        )
 
 if price:
     fingerprint = (price["buy"], price["sell"], price["ornament_buy"], price["ornament_sell"], price["seq"])
@@ -210,17 +230,45 @@ if price:
     change = float(price.get("change", 0))
     change_class = "change-up" if change >= 0 else "change-down"
     change_text = f"{'▲' if change > 0 else '▼' if change < 0 else '—'} {change:+,.0f} บาท จากประกาศสุดท้ายวันก่อน"
-    st.markdown('<div class="section-title">ราคาทองวันนี้</div><div class="section-note">ราคาประกาศสมาคมค้าทองคำ ทองคำ 96.5% ต่อ 1 บาททองคำ</div>', unsafe_allow_html=True)
+    saved_note = " · กำลังแสดงราคาล่าสุดที่บันทึกไว้" if using_saved_price else ""
+    st.markdown(f'<div class="section-title">ราคาทองวันนี้</div><div class="section-note">ราคาประกาศสมาคมค้าทองคำ ทองคำ 96.5% ต่อ 1 บาททองคำ{saved_note}</div>', unsafe_allow_html=True)
     st.markdown(f"""
     <section class="price-wrap"><div class="price-grid">
       <div class="product-name"><strong>ทองคำแท่ง</strong><span>ความบริสุทธิ์ 96.5%</span></div>
       <div class="quote"><div class="quote-label">รับซื้อ</div><div class="quote-value">{money(price['buy'])}</div><div class="quote-sub">บาทต่อ 1 บาททองคำ</div></div>
       <div class="quote"><div class="quote-label">ขายออก</div><div class="quote-value">{money(price['sell'])}</div><div class="quote-sub">บาทต่อ 1 บาททองคำ</div></div>
+      <div class="grid-placeholder" aria-hidden="true"></div>
       <div class="product-name"><strong>ทองรูปพรรณ</strong><span>ความบริสุทธิ์ 96.5%</span></div>
       <div class="quote"><div class="quote-label">ฐานภาษี / รับซื้อ</div><div class="quote-value">{money(price['ornament_buy'])}</div><div class="quote-sub">ตรวจสภาพและน้ำหนักจริงที่ร้าน</div></div>
       <div class="quote"><div class="quote-label">ขายออก</div><div class="quote-value">{money(price['ornament_sell'])}</div><div class="quote-sub">ยังไม่รวมค่ากำเหน็จของสินค้า</div></div>
+      <div class="quote scb-quote"><div class="quote-label">ราคาสคบ.</div><div class="quote-value">{money(price['buy']*(1-OLD_GOLD_COMPARISON_PERCENT/100))}</div><div class="quote-sub">ราคารับซื้อทองคำแท่ง − 5%</div></div>
     </div><div class="market-foot"><span>ประกาศ {price['timestamp'].strftime('%d/%m/%Y %H:%M น.')} • ครั้งที่ {price['seq'] or 'ไม่ระบุ'}</span><strong class="{change_class}">{change_text}</strong></div></section>
     """, unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown("#### คำนวณราคารับซื้อทองเก่าแบบรวดเร็ว")
+        quick_input, quick_result = st.columns([1, 1])
+        with quick_input:
+            quick_old_gold_grams = st.number_input(
+                "กรอกน้ำหนักทองเก่า (กรัม)",
+                min_value=0.01,
+                value=1.00,
+                step=0.01,
+                format="%.2f",
+                key="quick_old_gold_grams",
+            )
+        quick_scb_price = price["buy"] * (1 - OLD_GOLD_COMPARISON_PERCENT / 100)
+        quick_old_gold_price = quick_scb_price * 0.0656 * quick_old_gold_grams
+        with quick_result:
+            st.markdown(
+                '<div class="old-summary-card highlight">'
+                '<div class="old-summary-label">ราคารับซื้อทองเก่าหน้าร้าน</div>'
+                f'<div class="old-summary-value">{money(quick_old_gold_price)}</div>'
+                f'<div class="old-summary-sub">น้ำหนัก {quick_old_gold_grams:,.2f} กรัม</div>'
+                '</div>',
+                unsafe_allow_html=True,
+            )
+        st.caption("สูตร: ราคาสคบ. × 0.0656 × น้ำหนักกรัม · กรุณาตรวจเปอร์เซ็นต์ทองและน้ำหนักจริงก่อนยืนยันราคา")
+
     st.markdown(f"""<div class="sync-bar">
       <div class="sync-item"><div class="sync-label">สมาคมประกาศล่าสุด</div><div class="sync-value">{price['timestamp'].strftime('%d/%m/%Y %H:%M น.')} · ครั้งที่ {price['seq'] or 'ไม่ระบุ'}</div></div>
       <div class="sync-item"><div class="sync-label">หน้าเว็บตรวจข้อมูลล่าสุด</div><div class="sync-value"><span class="live-dot"></span>{checked_at.strftime('%d/%m/%Y %H:%M:%S น.')}</div></div>
@@ -229,32 +277,14 @@ if price:
 else:
     st.info("ส่วนคำนวณราคาจะเปิดใช้งานเมื่อโหลดประกาศราคาล่าสุดได้")
 
-st.markdown('<div class="section-title">ราคาเงินวันนี้</div><div class="section-note">ราคาอ้างอิงจากห้างกำปั่นทอง KPT · ราคาขายออกยังไม่รวมภาษีมูลค่าเพิ่ม</div>', unsafe_allow_html=True)
-try:
-    silver, silver_checked_at = silver_price()
-    st.markdown(
-        '<section class="price-wrap"><div class="silver-grid">'
-        f'<div class="silver-card"><div class="silver-label">ขายออก</div><div class="silver-value">{money(silver["sell_per_baht"])}</div><div class="silver-sub">บาท/บาท</div></div>'
-        f'<div class="silver-card"><div class="silver-label">รับซื้อ</div><div class="silver-value">{money(silver["buy_per_baht"])}</div><div class="silver-sub">บาท/บาท</div></div>'
-        f'<div class="silver-card"><div class="silver-label">ขายออก</div><div class="silver-value">{money(silver["sell_per_kg"])}</div><div class="silver-sub">บาท/กิโลกรัม</div></div>'
-        f'<div class="silver-card"><div class="silver-label">รับซื้อ</div><div class="silver-value">{money(silver["buy_per_kg"])}</div><div class="silver-sub">บาท/กิโลกรัม</div></div>'
-        f'<div class="silver-card"><div class="silver-label">รับซื้อคืนเงินรูปพรรณ</div><div class="silver-value">{money(silver["ornament_buy_per_gram"])}</div><div class="silver-sub">บาท/กรัม</div></div>'
-        '</div>'
-        f'<div class="silver-source">KPT ประกาศ {escape(silver["updated_text"])} · หน้าเว็บตรวจล่าสุด {silver_checked_at.strftime("%d/%m/%Y %H:%M:%S น.")} · <a href="{escape(silver["source"])}" target="_blank">เปิดหน้าอ้างอิง KPT</a></div></section>',
-        unsafe_allow_html=True,
-    )
-except Exception as exc:
-    st.warning(f"ขณะนี้ยังดึงราคาเงินจาก KPT ไม่ได้: {exc}")
-    st.link_button("เปิดหน้าอ้างอิงราคาเงิน KPT", "https://kpt.in.th/silverprice.php")
-
-tabs = st.tabs(["ราคาตามน้ำหนัก", "เครื่องคำนวณหน้าร้าน", "ต้นทุนรับซื้อทองเก่า", "คู่มือบริการ", "ข้อมูลร้าน"])
+tabs = st.tabs(["ราคาตามน้ำหนัก", "ต้นทุนรับซื้อทองเก่า", "ราคาเงิน", "คู่มือบริการ", "ข้อมูลร้าน"])
 
 with tabs[0]:
     st.markdown('<div class="section-title">ราคาแยกตามน้ำหนัก</div>', unsafe_allow_html=True)
     st.caption("ราคาขายหน้าร้านรวมค่ากำเหน็จทองรูปพรรณและค่า Block ทองคำแท่งตามขนาดแล้ว")
     if price:
         weight_cards(price)
-        st.caption("สูตรร้าน: ราคาทองตามน้ำหนัก + ค่ากำเหน็จหรือค่า Block ที่กำหนดสำหรับขนาดนั้น")
+        st.caption("สูตรรับซื้อทองรูปพรรณ: ราคาสคบ. × 0.0656 × น้ำหนักกรัม · ราคาขายใช้ราคาทองตามน้ำหนักบวกค่ากำเหน็จหรือค่า Block")
         st.markdown("#### คำนวณน้ำหนักที่ไม่ตรงขนาดมาตรฐาน")
         custom_left, custom_right = st.columns([.8, 1.2])
         with custom_left:
@@ -262,66 +292,21 @@ with tabs[0]:
             custom_weight = st.number_input(f"กรอกน้ำหนัก ({custom_unit})", min_value=0.01, value=1.0, step=0.01, format="%.2f", key="custom_weight")
             custom_making_fee = st.number_input("ค่ากำเหน็จทองรูปพรรณ (บาท)", min_value=0, value=700, step=100, key="custom_making_fee")
             custom_block_fee = st.number_input("ค่า Block ทองคำแท่ง (บาท)", min_value=0, value=500, step=100, key="custom_block_fee")
-            st.caption("ทองคำแท่ง 1 บาท = 15.244 กรัม · ทองรูปพรรณ 1 บาท = 15.16 กรัม")
+            st.caption("สูตรน้ำหนักรับซื้อ 1 บาททองคำ = 15.244 กรัม")
         if custom_unit == "กรัม":
             bullion_ratio = custom_weight / 15.244
             ornament_ratio = custom_weight / 15.16
+            custom_weight_grams = custom_weight
             custom_chip = f"{custom_weight:g} กรัม"
         else:
             bullion_ratio = ornament_ratio = custom_weight
+            custom_weight_grams = custom_weight * 15.244
             custom_chip = f"{custom_weight:g} บาททองคำ"
         with custom_right:
-            st.markdown(weight_card_html("น้ำหนักกำหนดเอง", price, bullion_ratio, ornament_ratio, custom_chip, custom_making_fee, custom_block_fee), unsafe_allow_html=True)
+            st.markdown(weight_card_html("น้ำหนักกำหนดเอง", price, bullion_ratio, ornament_ratio, custom_chip, custom_making_fee, custom_block_fee, custom_weight_grams), unsafe_allow_html=True)
     st.markdown('<div class="notice">ราคาบนเว็บไซต์เป็นราคาอ้างอิงก่อนตรวจสินค้า ราคาที่ร้านรับซื้อจริงขึ้นอยู่กับเปอร์เซ็นต์ทอง น้ำหนัก สภาพสินค้า และเงื่อนไขของร้าน</div>', unsafe_allow_html=True)
 
 with tabs[1]:
-    st.markdown('<div class="section-title">คำนวณราคาทองเบื้องต้น</div>', unsafe_allow_html=True)
-    if price:
-        left, right = st.columns(2)
-        with left:
-            product = st.selectbox("ประเภททอง", ["ทองคำแท่ง 96.5%", "ทองรูปพรรณ 96.5%"])
-            action = st.radio("ต้องการคำนวณ", ["ซื้อจากร้าน", "ขายคืนให้ร้าน"], horizontal=True)
-            weight_choice = st.selectbox("น้ำหนัก", [*[item["label"] for item in RETAIL_SIZES], "กำหนดเอง"])
-            selected_size = RETAIL_SIZE_BY_LABEL.get(weight_choice)
-            if selected_size:
-                baht_weight = selected_size["bullion_ratio"] if product.startswith("ทองคำแท่ง") else selected_size["ornament_ratio"]
-                preset_fee = selected_size["block_fee"] if product.startswith("ทองคำแท่ง") else selected_size["making_fee"]
-            else:
-                baht_weight = st.number_input("น้ำหนักจำนวนบาท", min_value=0.01, value=1.0, step=0.01)
-                preset_fee = 500 if product.startswith("ทองคำแท่ง") else 700
-            retail_fee = st.number_input(
-                "ค่า Block (บาท)" if product.startswith("ทองคำแท่ง") else "ค่ากำเหน็จ (บาท)",
-                min_value=0,
-                value=int(preset_fee),
-                step=100,
-                disabled=action.startswith("ขาย"),
-                key=f"retail_fee_{product}_{action}_{weight_choice}",
-            )
-        if action.startswith("ซื้อ"):
-            unit = price["sell"]
-            estimate = unit * baht_weight + retail_fee
-        else:
-            unit = price["buy"] if product.startswith("ทองคำแท่ง") else price["ornament_buy"]
-            estimate = unit * baht_weight
-        with right:
-            st.metric("ราคาประเมิน", money(estimate))
-            st.write(f"น้ำหนักรวม **{baht_weight:g} บาททองคำ**")
-            st.write(f"ราคาอ้างอิงต่อบาท **{money(unit)}**")
-            if retail_fee and action.startswith("ซื้อ"):
-                fee_name = "ค่า Block" if product.startswith("ทองคำแท่ง") else "ค่ากำเหน็จ"
-                st.write(f"รวม{fee_name} **{money(retail_fee)}**")
-            st.caption("ราคาซื้อจากร้านใช้สูตรราคาทองคำแท่งขายออกตามน้ำหนัก บวกค่ากำเหน็จหรือค่า Block")
-        st.divider()
-        st.markdown("#### ประเมินวงเงินจำนำเบื้องต้น")
-        p1, p2, p3 = st.columns(3)
-        pawn_type = p1.selectbox("ประเภท", ["ทองคำแท่ง", "ทองรูปพรรณ"], key="pawn_type")
-        pawn_weight = p2.number_input("น้ำหนัก (บาททองคำ)", min_value=0.01, value=1.0, step=0.25)
-        pawn_pct = p3.slider("สัดส่วนวงเงิน (%)", 30, 90, 70)
-        pawn_base = price["buy"] if pawn_type == "ทองคำแท่ง" else price["ornament_buy"]
-        st.metric("วงเงินประมาณการ", money(pawn_base * pawn_weight * pawn_pct / 100))
-        st.caption("ไม่ใช่คำเสนอรับจำนำจริง ต้องตรวจทอง บัตรประชาชน และเงื่อนไขตามกฎหมายที่หน้าร้าน")
-
-with tabs[2]:
     st.markdown('<div class="section-title">คำนวณต้นทุนรับซื้อทองเก่า</div>', unsafe_allow_html=True)
     st.caption("กรอกน้ำหนักเป็นกรัม ระบบจะแสดงราคาหน้าร้านทันทีและคำนวณครบทุกประเภทงาน")
     if price:
@@ -405,6 +390,25 @@ with tabs[2]:
         )
     else:
         st.info("เครื่องคำนวณจะเปิดเมื่อโหลดราคารับซื้อทองคำแท่งล่าสุดได้")
+
+with tabs[2]:
+    st.markdown('<div class="section-title">ราคาเงินวันนี้</div><div class="section-note">ราคาอ้างอิงจากห้างกำปั่นทอง KPT · ราคาขายออกยังไม่รวมภาษีมูลค่าเพิ่ม</div>', unsafe_allow_html=True)
+    try:
+        silver, silver_checked_at = silver_price()
+        st.markdown(
+            '<section class="price-wrap"><div class="silver-grid">'
+            f'<div class="silver-card"><div class="silver-label">ขายออก</div><div class="silver-value">{money(silver["sell_per_baht"])}</div><div class="silver-sub">บาท/บาท</div></div>'
+            f'<div class="silver-card"><div class="silver-label">รับซื้อ</div><div class="silver-value">{money(silver["buy_per_baht"])}</div><div class="silver-sub">บาท/บาท</div></div>'
+            f'<div class="silver-card"><div class="silver-label">ขายออก</div><div class="silver-value">{money(silver["sell_per_kg"])}</div><div class="silver-sub">บาท/กิโลกรัม</div></div>'
+            f'<div class="silver-card"><div class="silver-label">รับซื้อ</div><div class="silver-value">{money(silver["buy_per_kg"])}</div><div class="silver-sub">บาท/กิโลกรัม</div></div>'
+            f'<div class="silver-card"><div class="silver-label">รับซื้อคืนเงินรูปพรรณ</div><div class="silver-value">{money(silver["ornament_buy_per_gram"])}</div><div class="silver-sub">บาท/กรัม</div></div>'
+            '</div>'
+            f'<div class="silver-source">KPT ประกาศ {escape(silver["updated_text"])} · หน้าเว็บตรวจล่าสุด {silver_checked_at.strftime("%d/%m/%Y %H:%M:%S น.")} · <a href="{escape(silver["source"])}" target="_blank">เปิดหน้าอ้างอิง KPT</a></div></section>',
+            unsafe_allow_html=True,
+        )
+    except Exception as exc:
+        st.warning(f"ขณะนี้ยังดึงราคาเงินจาก KPT ไม่ได้: {exc}")
+        st.link_button("เปิดหน้าอ้างอิงราคาเงิน KPT", "https://kpt.in.th/silverprice.php")
 
 with tabs[3]:
     st.markdown('<div class="section-title">คู่มือช่วยพนักงานแนะนำสินค้า</div>', unsafe_allow_html=True)

@@ -1,8 +1,11 @@
 """Internal Streamlit counter dashboard for Somjai2 gold shop staff."""
+from io import BytesIO
+import zipfile
 from datetime import datetime
 from html import escape
 from zoneinfo import ZoneInfo
 
+import pandas as pd
 import streamlit as st
 try:
     from streamlit_autorefresh import st_autorefresh
@@ -80,8 +83,9 @@ html,body,[class*="css"],.stApp{font-family:'Noto Sans Thai',sans-serif}.stApp{b
 div[data-testid="stNumberInput"] input{background:#fff!important;font-size:1.45rem!important;font-weight:800!important;min-height:60px!important;color:#2d241b!important}div[data-testid="stNumberInput"] button{min-height:60px!important;min-width:48px!important}
 div[data-baseweb="tab-list"] button[data-baseweb="tab"]{color:#3d2a1d!important;font-size:1.02rem!important;font-weight:750!important;opacity:1!important}div[data-baseweb="tab-list"] button[data-baseweb="tab"] p,div[data-baseweb="tab-list"] button[data-baseweb="tab"] span{color:inherit!important;-webkit-text-fill-color:currentColor!important;opacity:1!important}div[data-baseweb="tab-list"] button[data-baseweb="tab"][aria-selected="true"]{color:#ff4b4b!important;border-bottom-color:#ff4b4b!important}div[data-baseweb="tab-list"] button[data-baseweb="tab"][aria-selected="false"]{color:#3d2a1d!important}div[data-baseweb="tab-highlight"]{background-color:#ff4b4b!important}
 .silver-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.silver-card{background:linear-gradient(145deg,#fff,#f3f4f6);border:1px solid #d8dce2;border-radius:16px;padding:15px}.silver-label{font-size:.82rem;color:#737983}.silver-value{font-size:1.25rem;font-weight:800;color:#39414b;margin-top:4px}.silver-sub{font-size:.76rem;color:#8a9098;margin-top:3px}.silver-source{margin-top:12px;color:#77695c;font-size:.86rem}.silver-source a{color:#8a5a00;font-weight:700}
+.wholesale-name{font-size:1.2rem;font-weight:850;color:#4d2a12;line-height:1.35;margin-top:5px}.wholesale-number{display:inline-block;background:#6f3512;color:#fff;border-radius:99px;padding:4px 10px;font-size:.88rem;font-weight:800;margin-right:8px}.wholesale-deduct{display:inline-block;background:#fff0bd;color:#805500;border-radius:99px;padding:5px 10px;font-weight:800;margin-top:10px}.wholesale-result{background:linear-gradient(145deg,#fffaf0,#fff);border:1px solid #ead8b8;border-radius:15px;padding:12px 15px;min-height:82px}.wholesale-result-label{font-size:.9rem;color:#796b5d;font-weight:700}.wholesale-result-value{font-size:1.45rem;color:#087b34;font-weight:900;margin-top:5px;font-variant-numeric:tabular-nums}
 .footer{margin-top:36px;background:#2d180d;border-radius:22px;padding:25px;text-align:center;color:#f8e8c9}.footer strong{color:#ffd66d;font-size:1.2rem}
-div[data-testid="stMetric"]{background:#fff;border:1px solid #eadcc5;border-radius:16px;padding:15px}div[data-testid="stMetricValue"]{color:#4c2d18}.stButton>button,.stFormSubmitButton>button{background:#7d3b12;color:white;border:0;border-radius:10px;font-weight:700}.stButton>button:hover,.stFormSubmitButton>button:hover{background:#a65316;color:white}
+div[data-testid="stMetric"]{background:linear-gradient(145deg,#fff,#fff7e6);border:1px solid #e3c88f;border-radius:18px;padding:16px;box-shadow:0 7px 18px rgba(83,48,14,.06)}div[data-testid="stMetricValue"]{color:#4c2d18;font-weight:850}[data-testid="stDataFrame"]{border:2px solid #dfc38a;border-radius:18px;overflow:hidden;box-shadow:0 9px 24px rgba(83,48,14,.08)}.stButton>button,.stFormSubmitButton>button{background:#7d3b12;color:white;border:0;border-radius:10px;font-weight:700}.stButton>button:hover,.stFormSubmitButton>button:hover{background:#a65316;color:white}
 /* Tablet: keep every section visible and remove fixed desktop assumptions. */
 @media(max-width:1024px){
   .block-container{max-width:100%;padding:1rem 1.15rem 1.8rem}
@@ -118,6 +122,7 @@ div[data-testid="stMetric"]{background:#fff;border:1px solid #eadcc5;border-radi
   [data-testid="stSidebar"]{max-width:min(88vw,340px)}
   [data-testid="stRadio"] label,[data-testid="stRadio"] p{color:#2d241b!important;opacity:1!important}
   .old-table{font-size:.76rem}.old-table th{font-size:.76rem}.old-table th,.old-table td{padding:9px 4px}.old-table th:first-child{width:25%}.deduct-badge{padding:3px 4px}.price-cell{font-size:.78rem}
+  .wholesale-name{font-size:1.1rem}.wholesale-result-value{font-size:1.3rem}.wholesale-result{min-height:0}
   .footer{padding:20px 14px;border-radius:16px}
 }
 </style>
@@ -137,6 +142,134 @@ def silver_price():
 def money(value):
     value = float(value)
     return f"฿{value:,.0f}" if value.is_integer() else f"฿{value:,.2f}"
+
+
+def wholesale_export_frames(editor_df, price, exported_at):
+    """Build the two printable/exportable sheets used by the wholesale counter."""
+    weights = pd.to_numeric(editor_df["น้ำหนัก (กรัม)"], errors="coerce").fillna(0).clip(lower=0)
+    deductions = pd.to_numeric(editor_df["หัก (%)"], errors="coerce").fillna(0)
+    price_per_baht = price["sell"] * (deductions / 100)
+    total_price = weights * GOLD_PER_GRAM_FACTOR * price_per_baht
+    plain = pd.DataFrame({
+        "ลำดับ": range(1, len(editor_df) + 1),
+        "รายการ": editor_df["รายการ"],
+        "น้ำหนัก (กรัม)": weights,
+    })
+    priced = plain.copy()
+    priced["หัก (%)"] = deductions
+    priced["ราคา/บาท"] = price_per_baht
+    priced["ราคารวม"] = total_price
+    priced.attrs["association_buy"] = price["buy"]
+    priced.attrs["association_sell"] = price["sell"]
+    timestamp_text = exported_at.strftime("%d/%m/%Y %H:%M:%S น.")
+    return plain, priced, timestamp_text
+
+
+def wholesale_xlsx_bytes(plain, priced, timestamp_text):
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        for sheet_name, frame, include_price in (
+            ("ใบชั่งไม่มีราคา", plain, False),
+            ("ใบชั่งพร้อมราคา", priced, True),
+        ):
+            frame.to_excel(writer, sheet_name=sheet_name, index=False, startrow=4)
+            sheet = writer.book[sheet_name]
+            sheet.merge_cells(start_row=1, start_column=1, end_row=1, end_column=len(frame.columns))
+            sheet.cell(1, 1, f"{SHOP_NAME} นครปฐม")
+            sheet.merge_cells(start_row=2, start_column=1, end_row=2, end_column=len(frame.columns))
+            sheet.cell(2, 1, f"วันที่และเวลาส่งออก: {timestamp_text}")
+            if include_price:
+                sheet.merge_cells(start_row=3, start_column=1, end_row=3, end_column=len(frame.columns))
+                sheet.cell(
+                    3,
+                    1,
+                    "สมาคมรับซื้อ ฿{:,.2f} | สมาคมขายออก ฿{:,.2f}".format(
+                        priced.attrs["association_buy"],
+                        priced.attrs["association_sell"],
+                    ),
+                )
+            for cell in sheet[5]:
+                cell.font = cell.font.copy(bold=True, color="FFFFFF")
+                cell.fill = cell.fill.copy(fill_type="solid", fgColor="71350F")
+            sheet.freeze_panes = "A6"
+            sheet.column_dimensions["A"].width = 10
+            sheet.column_dimensions["B"].width = 40
+            for column in range(3, len(frame.columns) + 1):
+                sheet.column_dimensions[chr(64 + column)].width = 20
+            total_row = 6 + len(frame)
+            sheet.cell(total_row, 2, "รวมน้ำหนักทั้งหมด")
+            sheet.cell(total_row, 3, float(plain["น้ำหนัก (กรัม)"].sum()))
+            if include_price:
+                sheet.cell(total_row + 1, 2, "รวมราคารับซื้อทั้งหมด")
+                sheet.cell(total_row + 1, len(frame.columns), float(priced["ราคารวม"].sum()))
+    return output.getvalue()
+
+
+def wholesale_svg(frame, timestamp_text, with_price=False):
+    width = 1200 if with_price else 900
+    columns = list(frame.columns)
+    widths = [80, 370, 160] if not with_price else [70, 340, 120, 125, 180, 180]
+    row_height = 54
+    top = 180 if with_price else 150
+    height = top + row_height * (len(frame) + 3) + 40
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
+        '<rect width="100%" height="100%" fill="#fffaf1"/>',
+        '<style>text{font-family:"Noto Sans Thai",Arial,sans-serif;fill:#2d241b}.title{font-size:32px;font-weight:800}.sub{font-size:18px}.head{font-size:16px;font-weight:700;fill:#fff}.cell{font-size:15px}.total{font-size:18px;font-weight:800}</style>',
+        f'<text x="35" y="48" class="title">{escape(SHOP_NAME)} นครปฐม</text>',
+        f'<text x="35" y="82" class="sub">วันที่และเวลาส่งออก: {escape(timestamp_text)}</text>',
+        f'<text x="35" y="112" class="sub">{"ใบชั่งพร้อมราคา" if with_price else "ใบชั่งน้ำหนัก"}</text>',
+    ]
+    if with_price:
+        parts.append(
+            '<text x="35" y="145" class="sub">'
+            "สมาคมรับซื้อ ฿{:,.2f}  |  สมาคมขายออก ฿{:,.2f}".format(
+                frame.attrs["association_buy"],
+                frame.attrs["association_sell"],
+            )
+            + "</text>"
+        )
+    x = 30
+    for label, col_width in zip(columns, widths):
+        parts.append(f'<rect x="{x}" y="{top}" width="{col_width}" height="{row_height}" fill="#71350f" stroke="#d9bd87"/>')
+        parts.append(f'<text x="{x + col_width / 2}" y="{top + 34}" text-anchor="middle" class="head">{escape(str(label))}</text>')
+        x += col_width
+    for row_index, (_, row) in enumerate(frame.iterrows(), start=1):
+        y = top + row_height * row_index
+        fill = "#ffffff" if row_index % 2 else "#fff4df"
+        x = 30
+        for col_index, (label, col_width) in enumerate(zip(columns, widths)):
+            value = row[label]
+            if isinstance(value, (float, int)):
+                if label in {"ลำดับ"}:
+                    shown = f"{int(value)}"
+                elif label == "หัก (%)":
+                    shown = f"{float(value):.2f}%"
+                elif "น้ำหนัก" in label:
+                    shown = f"{float(value):,.2f}"
+                else:
+                    shown = f"฿{float(value):,.2f}"
+            else:
+                shown = str(value)
+            parts.append(f'<rect x="{x}" y="{y}" width="{col_width}" height="{row_height}" fill="{fill}" stroke="#e5cfaa"/>')
+            anchor = "start" if col_index == 1 else "middle"
+            text_x = x + 12 if col_index == 1 else x + col_width / 2
+            parts.append(f'<text x="{text_x}" y="{y + 34}" text-anchor="{anchor}" class="cell">{escape(shown)}</text>')
+            x += col_width
+    total_y = top + row_height * (len(frame) + 1)
+    parts.append(f'<text x="35" y="{total_y + 36}" class="total">รวมน้ำหนักทั้งหมด: {float(frame["น้ำหนัก (กรัม)"].sum()):,.2f} กรัม</text>')
+    if with_price:
+        parts.append(f'<text x="720" y="{total_y + 36}" class="total">รวมราคารับซื้อทั้งหมด: ฿{float(frame["ราคารวม"].sum()):,.2f}</text>')
+    parts.append("</svg>")
+    return "".join(parts).encode("utf-8")
+
+
+def wholesale_svg_zip_bytes(plain, priced, timestamp_text):
+    output = BytesIO()
+    with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("01_ใบชั่งไม่มีราคา.svg", wholesale_svg(plain, timestamp_text, False))
+        archive.writestr("02_ใบชั่งพร้อมราคา.svg", wholesale_svg(priced, timestamp_text, True))
+    return output.getvalue()
 
 
 def weight_card_html(label, price, bullion_ratio, ornament_ratio=None, chip=None, making_fee=0, block_fee=0, weight_grams=None):
@@ -277,7 +410,7 @@ if price:
 else:
     st.info("ส่วนคำนวณราคาจะเปิดใช้งานเมื่อโหลดประกาศราคาล่าสุดได้")
 
-tabs = st.tabs(["ราคาตามน้ำหนัก", "ต้นทุนรับซื้อทองเก่า", "ราคาเงิน", "คู่มือบริการ", "ข้อมูลร้าน"])
+tabs = st.tabs(["ราคาตามน้ำหนัก", "ต้นทุนรับซื้อทองเก่า", "ร้านส่ง", "ราคาเงิน", "คู่มือบริการ", "ข้อมูลร้าน"])
 
 with tabs[0]:
     st.markdown('<div class="section-title">ราคาแยกตามน้ำหนัก</div>', unsafe_allow_html=True)
@@ -392,6 +525,87 @@ with tabs[1]:
         st.info("เครื่องคำนวณจะเปิดเมื่อโหลดราคารับซื้อทองคำแท่งล่าสุดได้")
 
 with tabs[2]:
+    st.markdown('<div class="section-title">ร้านส่ง</div><div class="section-note">กรอกน้ำหนักแยกตามประเภทงาน ระบบจะคำนวณราคา/บาท ราคารวม และจัดทำเอกสาร 2 แผ่นให้ทันที</div>', unsafe_allow_html=True)
+    if price:
+        summary_buy, summary_sell = st.columns(2)
+        summary_buy.metric("สมาคมรับซื้อ", money(price["buy"]))
+        summary_sell.metric("สมาคมขายออก", money(price["sell"]))
+        st.markdown("#### กรอกน้ำหนักและดูราคาในรายการเดียวกัน")
+        st.caption("สูตรร้านส่ง: ราคา/บาท = เปอร์เซ็นต์หัก × ราคาสมาคมขายออก · ราคารวม = น้ำหนักกรัม × 0.0656 × ราคา/บาท")
+        wholesale_rows = []
+        for row_number, (item_name, deduction) in enumerate(OLD_GOLD_TYPES.items(), start=1):
+            price_per_baht = price["sell"] * (deduction / 100)
+            with st.container(border=True):
+                name_col, input_col, baht_price_col, total_col = st.columns([2.5, 1.15, 1.15, 1.25])
+                with name_col:
+                    st.markdown(
+                        f'<div class="wholesale-name"><span class="wholesale-number">{row_number}</span>{escape(item_name)}</div>'
+                        f'<div class="wholesale-deduct">หัก {deduction:.2f}%</div>',
+                        unsafe_allow_html=True,
+                    )
+                with input_col:
+                    row_weight = st.number_input(
+                        "น้ำหนัก (กรัม)",
+                        min_value=0.0,
+                        value=0.0,
+                        step=0.01,
+                        format="%.2f",
+                        key=f"wholesale_weight_{row_number}",
+                    )
+                row_total = row_weight * GOLD_PER_GRAM_FACTOR * price_per_baht
+                with baht_price_col:
+                    st.markdown(
+                        '<div class="wholesale-result"><div class="wholesale-result-label">ราคา/บาท</div>'
+                        f'<div class="wholesale-result-value">{money(price_per_baht)}</div></div>',
+                        unsafe_allow_html=True,
+                    )
+                with total_col:
+                    st.markdown(
+                        '<div class="wholesale-result"><div class="wholesale-result-label">ราคารวม</div>'
+                        f'<div class="wholesale-result-value">{money(row_total)}</div></div>',
+                        unsafe_allow_html=True,
+                    )
+                wholesale_rows.append({
+                    "ลำดับ": row_number,
+                    "รายการ": item_name,
+                    "หัก (%)": deduction,
+                    "น้ำหนัก (กรัม)": row_weight,
+                })
+
+        edited_wholesale = pd.DataFrame(wholesale_rows)
+
+        export_time = datetime.now(ZoneInfo("Asia/Bangkok"))
+        plain_sheet, priced_sheet, export_timestamp = wholesale_export_frames(
+            edited_wholesale, price, export_time
+        )
+        total_weight = float(plain_sheet["น้ำหนัก (กรัม)"].sum())
+        total_purchase = float(priced_sheet["ราคารวม"].sum())
+        total_left, total_right = st.columns(2)
+        total_left.metric("รวมน้ำหนักทั้งหมด", f"{total_weight:,.2f} กรัม")
+        total_right.metric("รวมราคารับซื้อทั้งหมด", money(total_purchase))
+
+        excel_data = wholesale_xlsx_bytes(plain_sheet, priced_sheet, export_timestamp)
+        image_zip_data = wholesale_svg_zip_bytes(plain_sheet, priced_sheet, export_timestamp)
+        export_col1, export_col2 = st.columns(2)
+        export_col1.download_button(
+            "ดาวน์โหลด Excel 2 แผ่น",
+            data=excel_data,
+            file_name=f"ร้านส่ง_{export_time.strftime('%Y%m%d_%H%M%S')}.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            use_container_width=True,
+        )
+        export_col2.download_button(
+            "ดาวน์โหลดรูปภาพ 2 แผ่น",
+            data=image_zip_data,
+            file_name=f"รูปภาพร้านส่ง_{export_time.strftime('%Y%m%d_%H%M%S')}.zip",
+            mime="application/zip",
+            use_container_width=True,
+        )
+        st.caption("ไฟล์รูปภาพเป็น SVG 2 รูป เปิดด้วย Safari, Chrome หรือโปรแกรมดูรูป แล้วพิมพ์ได้โดยตัวหนังสือไม่แตก")
+    else:
+        st.info("ตารางร้านส่งจะเปิดเมื่อโหลดราคาสมาคมล่าสุดได้")
+
+with tabs[3]:
     st.markdown('<div class="section-title">ราคาเงินวันนี้</div><div class="section-note">ราคาอ้างอิงจากห้างกำปั่นทอง KPT · ราคาขายออกยังไม่รวมภาษีมูลค่าเพิ่ม</div>', unsafe_allow_html=True)
     try:
         silver, silver_checked_at = silver_price()
@@ -410,7 +624,7 @@ with tabs[2]:
         st.warning(f"ขณะนี้ยังดึงราคาเงินจาก KPT ไม่ได้: {exc}")
         st.link_button("เปิดหน้าอ้างอิงราคาเงิน KPT", "https://kpt.in.th/silverprice.php")
 
-with tabs[3]:
+with tabs[4]:
     st.markdown('<div class="section-title">คู่มือช่วยพนักงานแนะนำสินค้า</div>', unsafe_allow_html=True)
     st.markdown("""
     <div class="collection-grid">
@@ -425,7 +639,7 @@ with tabs[3]:
       <div class="service-card"><div class="service-icon">▣</div><h4>ประเมินวงเงิน</h4><p>ประเมินเบื้องต้นจากราคารับซื้อ น้ำหนัก คุณภาพ และเงื่อนไขของร้าน</p></div>
     </div>""", unsafe_allow_html=True)
 
-with tabs[4]:
+with tabs[5]:
     st.markdown('<div class="section-title">ข้อมูลร้านและขั้นตอนก่อนยืนยันราคา</div>', unsafe_allow_html=True)
     info, checklist = st.columns([.85, 1.15])
     with info:

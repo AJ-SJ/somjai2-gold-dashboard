@@ -12,7 +12,7 @@ try:
 except ImportError:
     st_autorefresh = None
 
-from official import latest_bullion, latest_silver
+from official import IntergoldLiveFeed, latest_bullion, latest_intergold, latest_silver
 
 SHOP_NAME = "ห้างทองสมใจ 2"
 SHOP_TAGLINE = "ทองสวย คุณภาพมั่นใจ บริการด้วยความจริงใจ"
@@ -83,6 +83,7 @@ html,body,[class*="css"],.stApp{font-family:'Noto Sans Thai',sans-serif}.stApp{b
 div[data-testid="stNumberInput"] input{background:#fff!important;font-size:1.45rem!important;font-weight:800!important;min-height:60px!important;color:#2d241b!important}div[data-testid="stNumberInput"] button{min-height:60px!important;min-width:48px!important}
 div[data-baseweb="tab-list"] button[data-baseweb="tab"]{color:#3d2a1d!important;font-size:1.02rem!important;font-weight:750!important;opacity:1!important}div[data-baseweb="tab-list"] button[data-baseweb="tab"] p,div[data-baseweb="tab-list"] button[data-baseweb="tab"] span{color:inherit!important;-webkit-text-fill-color:currentColor!important;opacity:1!important}div[data-baseweb="tab-list"] button[data-baseweb="tab"][aria-selected="true"]{color:#ff4b4b!important;border-bottom-color:#ff4b4b!important}div[data-baseweb="tab-list"] button[data-baseweb="tab"][aria-selected="false"]{color:#3d2a1d!important}div[data-baseweb="tab-highlight"]{background-color:#ff4b4b!important}
 .silver-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.silver-card{background:linear-gradient(145deg,#fff,#f3f4f6);border:1px solid #d8dce2;border-radius:16px;padding:15px}.silver-label{font-size:.82rem;color:#737983}.silver-value{font-size:1.25rem;font-weight:800;color:#39414b;margin-top:4px}.silver-sub{font-size:.76rem;color:#8a9098;margin-top:3px}.silver-source{margin-top:12px;color:#77695c;font-size:.86rem}.silver-source a{color:#8a5a00;font-weight:700}
+.intergold-board{overflow:hidden;border:1px solid #e2e5e9;border-top:5px solid #d71920;border-radius:18px;background:#fff;box-shadow:0 9px 28px rgba(26,35,50,.08)}.intergold-head,.intergold-row{display:grid;grid-template-columns:1.35fr 1fr 1fr;align-items:center}.intergold-head{background:#f7f8fa;color:#70747a;font-size:1.05rem;font-weight:750}.intergold-head>div,.intergold-row>div{padding:15px 20px}.intergold-row{border-top:1px solid #e7e7e7}.intergold-name{font-size:1.2rem;font-weight:850;color:#292d33}.intergold-detail{font-size:.82rem;color:#6e737b;margin-top:2px}.intergold-price{font-size:1.38rem;font-weight:850;color:#252a30;font-variant-numeric:tabular-nums}.intergold-price.up,.intergold-change.up{color:#08a638}.intergold-price.down,.intergold-change.down{color:#c53d3d}.intergold-change{font-size:.82rem;margin-top:2px;color:#686d73}.intergold-meta{margin-top:13px;color:#77695c;font-size:.88rem}
 .wholesale-name{font-size:1.2rem;font-weight:850;color:#4d2a12;line-height:1.35;margin-top:5px}.wholesale-number{display:inline-block;background:#6f3512;color:#fff;border-radius:99px;padding:4px 10px;font-size:.88rem;font-weight:800;margin-right:8px}.wholesale-deduct{display:inline-block;background:#fff0bd;color:#805500;border-radius:99px;padding:5px 10px;font-weight:800;margin-top:10px}.wholesale-result{background:linear-gradient(145deg,#fffaf0,#fff);border:1px solid #ead8b8;border-radius:15px;padding:12px 15px;min-height:82px}.wholesale-result-label{font-size:.9rem;color:#796b5d;font-weight:700}.wholesale-result-value{font-size:1.45rem;color:#087b34;font-weight:900;margin-top:5px;font-variant-numeric:tabular-nums}
 .footer{margin-top:36px;background:#2d180d;border-radius:22px;padding:25px;text-align:center;color:#f8e8c9}.footer strong{color:#ffd66d;font-size:1.2rem}
 div[data-testid="stMetric"]{background:linear-gradient(145deg,#fff,#fff7e6);border:1px solid #e3c88f;border-radius:18px;padding:16px;box-shadow:0 7px 18px rgba(83,48,14,.06)}div[data-testid="stMetricValue"]{color:#4c2d18;font-weight:850}[data-testid="stDataFrame"]{border:2px solid #dfc38a;border-radius:18px;overflow:hidden;box-shadow:0 9px 24px rgba(83,48,14,.08)}.stButton>button,.stFormSubmitButton>button{background:#7d3b12;color:white;border:0;border-radius:10px;font-weight:700}.stButton>button:hover,.stFormSubmitButton>button:hover{background:#a65316;color:white}
@@ -111,6 +112,7 @@ div[data-testid="stMetric"]{background:linear-gradient(145deg,#fff,#fff7e6);bord
   .product-name{padding:16px}.product-name strong{font-size:1.3rem}.quote{padding:14px 16px}.quote-value{font-size:1.5rem}
   .service-grid,.collection-grid,.weight-grid,.weight-products{grid-template-columns:1fr}
   .silver-grid{grid-template-columns:1fr}
+  .intergold-head>div,.intergold-row>div{padding:11px 8px}.intergold-head{font-size:.84rem}.intergold-name{font-size:1rem}.intergold-detail{font-size:.7rem}.intergold-price{font-size:1rem}.intergold-change{font-size:.72rem}
   .old-summary-grid{grid-template-columns:1fr}.old-summary-value{font-size:1.8rem}.old-summary-card.highlight .old-summary-value{font-size:2.1rem}
   .service-card,.collection-card{min-height:0;padding:16px}.weight-card{padding:14px}.weight-title{align-items:flex-start;gap:8px}
   .weight-pair{font-size:.9rem}.weight-pair strong{white-space:nowrap}
@@ -129,7 +131,7 @@ div[data-testid="stMetric"]{background:linear-gradient(145deg,#fff,#fff7e6);bord
 """, unsafe_allow_html=True)
 
 
-@st.cache_data(ttl=10, show_spinner=False)
+@st.cache_data(ttl=2, show_spinner=False)
 def official_price():
     return latest_bullion(), datetime.now(ZoneInfo("Asia/Bangkok"))
 
@@ -137,6 +139,16 @@ def official_price():
 @st.cache_data(ttl=30, show_spinner=False)
 def silver_price():
     return latest_silver(), datetime.now(ZoneInfo("Asia/Bangkok"))
+
+
+@st.cache_resource(show_spinner=False)
+def intergold_live_feed():
+    return IntergoldLiveFeed()
+
+
+@st.cache_data(ttl=2, show_spinner=False)
+def intergold_price(_feed):
+    return latest_intergold(_feed), datetime.now(ZoneInfo("Asia/Bangkok"))
 
 
 def money(value):
@@ -309,19 +321,20 @@ with st.expander("ตั้งค่าการอัปเดตราคา",
     refresh_col, action_col = st.columns([1.2, .8])
     with refresh_col:
         refresh_label = st.selectbox(
-            "ตรวจราคาสมาคมอัตโนมัติ",
-            ["ทุก 15 วินาที", "ทุก 30 วินาที", "ทุก 1 นาที", "ทุก 5 นาที"],
-            index=1,
+            "ตรวจราคาสมาคมและ InterGOLD อัตโนมัติ",
+            ["ทุก 5 วินาที", "ทุก 10 วินาที", "ทุก 15 วินาที", "ทุก 30 วินาที", "ทุก 1 นาที", "ทุก 5 นาที"],
+            index=0,
         )
-        st.caption("แนะนำ 30 วินาที หน้าเว็บต้องเปิดอยู่ ระบบจึงตรวจราคาเป็นระยะ")
+        st.caption("แนะนำ 5 วินาทีสำหรับราคาที่วิ่งเร็ว · หน้าเว็บต้องเปิดอยู่ ระบบจึงตรวจทั้งสองแหล่งพร้อมกัน")
     with action_col:
-        st.write("ตรวจสอบทันทีโดยไม่ต้องรอรอบถัดไป")
-        if st.button("ตรวจราคาตอนนี้", use_container_width=True):
+        st.write("ตรวจทั้งสองแหล่งทันทีโดยไม่ต้องรอรอบถัดไป")
+        if st.button("ตรวจราคาทั้งหมดตอนนี้", use_container_width=True):
             official_price.clear()
             silver_price.clear()
+            intergold_price.clear()
             st.rerun()
 
-refresh_seconds = {"ทุก 15 วินาที": 15, "ทุก 30 วินาที": 30, "ทุก 1 นาที": 60, "ทุก 5 นาที": 300}[refresh_label]
+refresh_seconds = {"ทุก 5 วินาที": 5, "ทุก 10 วินาที": 10, "ทุก 15 วินาที": 15, "ทุก 30 วินาที": 30, "ทุก 1 นาที": 60, "ทุก 5 นาที": 300}[refresh_label]
 
 if st_autorefresh is not None:
     st_autorefresh(interval=refresh_seconds*1000, key="association_auto_refresh")
@@ -410,7 +423,7 @@ if price:
 else:
     st.info("ส่วนคำนวณราคาจะเปิดใช้งานเมื่อโหลดประกาศราคาล่าสุดได้")
 
-tabs = st.tabs(["ราคาตามน้ำหนัก", "ต้นทุนรับซื้อทองเก่า", "ร้านส่ง", "ราคาเงิน", "คู่มือบริการ", "ข้อมูลร้าน"])
+tabs = st.tabs(["ราคาตามน้ำหนัก", "ต้นทุนรับซื้อทองเก่า", "ร้านส่ง", "ราคาเงิน", "ราคา InterGOLD", "คู่มือบริการ", "ข้อมูลร้าน"])
 
 with tabs[0]:
     st.markdown('<div class="section-title">ราคาแยกตามน้ำหนัก</div>', unsafe_allow_html=True)
@@ -584,16 +597,24 @@ with tabs[2]:
         total_left.metric("รวมน้ำหนักทั้งหมด", f"{total_weight:,.2f} กรัม")
         total_right.metric("รวมราคารับซื้อทั้งหมด", money(total_purchase))
 
-        excel_data = wholesale_xlsx_bytes(plain_sheet, priced_sheet, export_timestamp)
         image_zip_data = wholesale_svg_zip_bytes(plain_sheet, priced_sheet, export_timestamp)
         export_col1, export_col2 = st.columns(2)
-        export_col1.download_button(
-            "ดาวน์โหลด Excel 2 แผ่น",
-            data=excel_data,
-            file_name=f"ร้านส่ง_{export_time.strftime('%Y%m%d_%H%M%S')}.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            use_container_width=True,
-        )
+        try:
+            excel_data = wholesale_xlsx_bytes(plain_sheet, priced_sheet, export_timestamp)
+        except (ImportError, ModuleNotFoundError):
+            excel_data = None
+        if excel_data is not None:
+            export_col1.download_button(
+                "ดาวน์โหลด Excel 2 แผ่น",
+                data=excel_data,
+                file_name=f"ร้านส่ง_{export_time.strftime('%Y%m%d_%H%M%S')}.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                use_container_width=True,
+            )
+        else:
+            export_col1.warning(
+                "ปุ่ม Excel ยังไม่พร้อม: กรุณาอัปโหลด requirements.txt เวอร์ชันล่าสุดแล้ว Reboot app"
+            )
         export_col2.download_button(
             "ดาวน์โหลดรูปภาพ 2 แผ่น",
             data=image_zip_data,
@@ -625,6 +646,47 @@ with tabs[3]:
         st.link_button("เปิดหน้าอ้างอิงราคาเงิน KPT", "https://kpt.in.th/silverprice.php")
 
 with tabs[4]:
+    st.markdown('<div class="section-title">ราคา InterGOLD</div><div class="section-note">ราคาที่เผยแพร่บนหน้าเว็บไซต์ InterGOLD โดยตรง · แสดงทั้งราคาทอง 99.99%, 96.5%, สมาคมฯ, Gold Spot และค่าเงินบาท</div>', unsafe_allow_html=True)
+    try:
+        intergold, intergold_checked_at = intergold_price(intergold_live_feed())
+        intergold_age = max(
+            0,
+            int((intergold_checked_at - intergold["timestamp"].to_pydatetime()).total_seconds()),
+        )
+        intergold_rows = []
+        for row in intergold["rows"]:
+            cells = []
+            for side in ("buy", "sell"):
+                value = row[side]
+                diff = float(row[f"{side}_diff"] or 0)
+                direction = "up" if diff > 0 else "down" if diff < 0 else ""
+                arrow = "▲ " if diff > 0 else "▼ " if diff < 0 else ""
+                shown = "—" if value is None else (f"{value:,.2f}" if row["name"] in {"Gold Spot", "ค่าเงินบาท"} else f"{value:,.0f}")
+                cells.append(
+                    f'<div><div class="intergold-price {direction}">{arrow}{shown}</div>'
+                    f'<div class="intergold-change {direction}">{diff:+,.2f}</div></div>'
+                )
+            intergold_rows.append(
+                '<div class="intergold-row">'
+                f'<div><div class="intergold-name">{escape(row["name"])}</div><div class="intergold-detail">{escape(row["detail"])}</div></div>'
+                + ''.join(cells) + '</div>'
+            )
+        st.markdown(
+            '<section class="intergold-board"><div class="intergold-head"><div>ประเภท</div><div>รับซื้อ</div><div>ขายออก</div></div>'
+            + ''.join(intergold_rows) + '</section>'
+            f'<div class="intergold-meta">ราคาสด InterGOLD อัปเดต {intergold["timestamp"].strftime("%d/%m/%Y %H:%M:%S น.")} · '
+            f'หน้าเว็บตรวจล่าสุด {intergold_checked_at.strftime("%d/%m/%Y %H:%M:%S น.")} · ข้อมูลช้า {intergold_age} วินาที</div>',
+            unsafe_allow_html=True,
+        )
+        if intergold["market_open"] and intergold_age > 30:
+            st.warning("ราคาสด InterGOLD ขาดการอัปเดตเกิน 30 วินาที กรุณาตรวจหน้าเว็บต้นทางก่อนยืนยันราคา")
+        st.link_button("เปิดหน้าเว็บไซต์ InterGOLD", intergold["source"])
+        st.caption("รับข้อมูลจาก Socket.IO ชุดเดียวกับหน้า InterGOLD โดยตรง · ควรตรวจสอบเวลาอัปเดตก่อนยืนยันรายการซื้อขาย")
+    except Exception as exc:
+        st.warning(f"ขณะนี้ยังดึงราคาจาก InterGOLD ไม่ได้: {exc}")
+        st.link_button("เปิดหน้าเว็บไซต์ InterGOLD", "https://www.intergold.co.th/")
+
+with tabs[5]:
     st.markdown('<div class="section-title">คู่มือช่วยพนักงานแนะนำสินค้า</div>', unsafe_allow_html=True)
     st.markdown("""
     <div class="collection-grid">
@@ -639,7 +701,7 @@ with tabs[4]:
       <div class="service-card"><div class="service-icon">▣</div><h4>ประเมินวงเงิน</h4><p>ประเมินเบื้องต้นจากราคารับซื้อ น้ำหนัก คุณภาพ และเงื่อนไขของร้าน</p></div>
     </div>""", unsafe_allow_html=True)
 
-with tabs[5]:
+with tabs[6]:
     st.markdown('<div class="section-title">ข้อมูลร้านและขั้นตอนก่อนยืนยันราคา</div>', unsafe_allow_html=True)
     info, checklist = st.columns([.85, 1.15])
     with info:
@@ -657,4 +719,4 @@ with tabs[5]:
         st.write("**ราคารับซื้อและจำนำ:** ต้องตรวจเปอร์เซ็นต์ น้ำหนัก สภาพ เอกสาร และเงื่อนไขของร้านก่อนยืนยัน")
 
 footer_time = checked_at.strftime('%d/%m/%Y %H:%M:%S น.') if checked_at else "ยังตรวจข้อมูลไม่สำเร็จ"
-st.markdown(f"""<footer class="footer"><strong>{SHOP_NAME} · ระบบภายในร้าน</strong><br>ตรวจราคาสมาคมอัตโนมัติเมื่อเปิดหน้านี้ไว้<br><small>หน้าเว็บตรวจข้อมูลล่าสุด {footer_time}</small></footer>""", unsafe_allow_html=True)
+st.markdown(f"""<footer class="footer"><strong>{SHOP_NAME} · ระบบภายในร้าน</strong><br>ตรวจราคาสมาคมและ InterGOLD อัตโนมัติพร้อมกันเมื่อเปิดหน้านี้ไว้<br><small>หน้าเว็บตรวจข้อมูลล่าสุด {footer_time}</small></footer>""", unsafe_allow_html=True)
